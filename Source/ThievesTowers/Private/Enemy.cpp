@@ -2,8 +2,10 @@
 
 #include "Path.h"
 #include "Projectile.h"
-#include "Components/SplineComponent.h"
+#include "Engine/DamageEvents.h"
 #include "PaperSpriteComponent.h"
+#include "Components/SplineComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 //////////////////////////////////////////////////////////////////////////
 /// AEnemy - Constructor
@@ -32,6 +34,8 @@ void AEnemy::InitializeEnemy(APath* NewPath, float NewCurrentDistance)
 
 	APath* ptr = CurrentPath; this->TotalDistance = 0.0f;
 	while (ptr) { TotalDistance += ptr->GetSplineComponent()->GetSplineLength(); ptr = ptr->GetNextPath(); }
+
+	DynamicMaterial = Cast<UMaterialInstanceDynamic>(SpriteComponent->CreateAndSetMaterialInstanceDynamic(0));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,12 +82,36 @@ void AEnemy::TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> Typ
 	TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
+void AEnemy::Freeze(float FreezeTime, FColor FreezeColor, int NewDamageAfterFreeze, TArray<TEnumAsByte<ETypeOfDamage>> NewTypesOfDamage)
+{
+	RemainingFreezeTime = FreezeTime;
+	DamageAfterFreeze = NewDamageAfterFreeze;
+	FreezeTypesOfDamage = NewTypesOfDamage;
+	
+	if (DynamicMaterial)
+	{
+		DynamicMaterial->SetScalarParameterValue(FName("Alpha"), 0.0f);
+		DynamicMaterial->SetVectorParameterValue(FName("Color"), FreezeColor);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 ///	AEnemy - Public Overrides Methods - AActor
 //////////////////////////////////////////////////////////////////////////
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (RemainingFreezeTime > 0.0f) { RemainingFreezeTime -= DeltaTime; return; }
+	if (RemainingFreezeTime > 0.0f)
+	{
+		RemainingFreezeTime -= DeltaTime;
+		if (RemainingFreezeTime <= 0.0f && DynamicMaterial)
+		{
+			DynamicMaterial->SetScalarParameterValue(FName("Alpha"), 1.0f);
+			if (DamageAfterFreeze > 0) { TakeDamage(DamageAfterFreeze, FreezeTypesOfDamage, FDamageEvent(), nullptr, this); }
+			DamageAfterFreeze = 0;
+			FreezeTypesOfDamage.Empty();
+		}
+		return;
+	}
 	MoveAlongPath(DeltaTime);
 }
