@@ -33,14 +33,14 @@ void AProjectile::MoveTowardsTarget(float DeltaTime)
 	if (bLockOnTarget && TargetEnemy == nullptr) { Destroy(); return; }
 
 	// Move towards target enemy
-	FVector Direction = bLockOnTarget ? TargetEnemy->GetActorLocation() - GetActorLocation() : TargetPosition - InitialPosition;
+	FVector Direction = bLockOnTarget ? TargetEnemy->GetActorLocation() + (TargetEnemy->GetActorUpVector() * TargetEnemy->GetTargetZOffset()) - GetActorLocation() : TargetPosition - InitialPosition;
 	Direction.Normalize(); const FVector NewLocation = GetActorLocation() + Direction * Speed * DeltaTime;
 
 	//if (FVector::Dist(NewLocation, TargetEnemy->GetActorLocation()) < Epsilon)
-	if ((bLockOnTarget && FVector::Dist(NewLocation, TargetEnemy->GetActorLocation()) < Epsilon) || (!bLockOnTarget && FVector::Dist(NewLocation, TargetPosition) < Epsilon)) { Impact(); return; }
+	if ((bLockOnTarget && FVector::Dist(NewLocation, TargetEnemy->GetActorLocation() + (TargetEnemy->GetActorUpVector() * TargetEnemy->GetTargetZOffset())) < Epsilon) || (!bLockOnTarget && FVector::Dist(NewLocation, TargetPosition) < Epsilon)) { Impact(); return; }
 	
 	SetActorLocation(NewLocation);
-	SetActorRotation(GetLookAtRotation(GetActorLocation(), bLockOnTarget ? TargetEnemy->GetActorLocation() : TargetPosition));
+	SetActorRotation(GetLookAtRotation(GetActorLocation(), bLockOnTarget ? TargetEnemy->GetActorLocation() + (TargetEnemy->GetActorUpVector() * TargetEnemy->GetTargetZOffset()) : TargetPosition));
 }
 
 void AProjectile::Impact()
