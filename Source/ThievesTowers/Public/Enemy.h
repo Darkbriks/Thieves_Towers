@@ -18,6 +18,8 @@ class THIEVESTOWERS_API AEnemy : public AActor
 
 	// Variables
 	int Health = 0;
+
+	float RemainingFreezeTime = 0.0f;
 	
 	float CurrentPathDistance = 0.0f;
 	float CurrentPathLength = 0.0f;
@@ -33,9 +35,6 @@ class THIEVESTOWERS_API AEnemy : public AActor
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Enemy - Components", meta = (AllowPrivateAccess = "true"))
 	UPaperSpriteComponent* SpriteComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Enemy - Components", meta = (AllowPrivateAccess = "true"))
-	UWidgetComponent* HealthBarWidget;
 	
 protected:
 	// Attributes
@@ -56,6 +55,8 @@ protected:
 
 	// Methods
 	void MoveAlongPath(float DeltaTime);
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	void Die();
 	
 public:
@@ -79,9 +80,12 @@ public:
 
 	TArray<AProjectile*> GetProjectiles() const { return Projectiles; }
 
+	// Setters
+	void SetFreezeTime(float NewFreezeTime) { RemainingFreezeTime = NewFreezeTime; }
+
 	// Methods
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	//void AddProjectile(AProjectile* NewProjectile) { Projectiles.Add(NewProjectile); TODO
+	void TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	void AddProjectile(AProjectile* NewProjectile) { Projectiles.Add(NewProjectile); }
 
 	// Overriden methods
 	virtual void Tick(float DeltaTime) override;

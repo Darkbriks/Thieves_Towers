@@ -1,9 +1,8 @@
 #include "Enemy.h"
 
 #include "Path.h"
-//#include "Projectile.h" TODO
+#include "Projectile.h"
 #include "Components/SplineComponent.h"
-#include "Components/WidgetComponent.h"
 #include "PaperSpriteComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -19,12 +18,7 @@ AEnemy::AEnemy()
 
 	SpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteComponent"));
 	SpriteComponent->SetupAttachment(RootComponent);
-
-	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidgetComponent"));
-	HealthBarWidget->SetupAttachment(RootComponent);
-	HealthBarWidget->SetWidgetSpace(EWidgetSpace::World);
-	HealthBarWidget->SetDrawSize(FVector2D(100.0f, 10.0f));
-	HealthBarWidget->SetVisibility(true);
+	SpriteComponent->CastShadow = true;
 }
 
 
@@ -62,20 +56,26 @@ void AEnemy::MoveAlongPath(float DeltaTime)
 	else { Die(); }
 }
 
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Health -= DamageAmount;
+	if (Health <= 0.0f) { Die(); }
+	return DamageAmount;
+}
+
 void AEnemy::Die()
 {
-	//for (AProjectile* Projectile : Projectiles) { Projectile->Destroy(); } TODO
+	for (AProjectile* Projectile : Projectiles) { Projectile->Destroy(); }
 	Destroy();
 }
 
 //////////////////////////////////////////////////////////////////////////
 /// AEnemy - Public Methods
 //////////////////////////////////////////////////////////////////////////
-float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void AEnemy::TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Health -= DamageAmount;
-	if (Health <= 0.0f) { Die(); }
-	return DamageAmount;
+	for (TEnumAsByte<ETypeOfDamage> TypeOfDamage : TypesOfDamage) { if (Resistances.Contains(TypeOfDamage)) { return; } }
+	TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -84,5 +84,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (RemainingFreezeTime > 0.0f) { RemainingFreezeTime -= DeltaTime; return; }
 	MoveAlongPath(DeltaTime);
 }
