@@ -39,6 +39,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect")
 	float TimeBetweenTargets = 0.2f;
+
+	void InitializeEffect();
     
 public:
 	virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy) override;

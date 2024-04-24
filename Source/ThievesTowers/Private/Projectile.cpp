@@ -1,5 +1,6 @@
 #include "Projectile.h"
 #include "Enemy.h"
+#include "GA_ThievesTowers.h"
 #include "PaperSpriteComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Engine/DamageEvents.h"
@@ -49,7 +50,11 @@ void AProjectile::Impact()
 	TargetEnemy->TakeDamage(Damage, TypesOfDamage, FDamageEvent(), nullptr, this);
 	for (TSubclassOf<UProjectileEffect> Effect : Effects)
 	{
-		if (UProjectileEffect* NewEffect = NewObject<UProjectileEffect>(this, Effect)) { NewEffect->ApplyEffect(this->GetTransform(), TargetEnemy); }
+		//if (UProjectileEffect* NewEffect = NewObject<UProjectileEffect>(this, Effect)) { NewEffect->ApplyEffect(this->GetTransform(), TargetEnemy); }
+		if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+		{
+			GameInstance->GetProjectileEffect(Effect)->ApplyEffect(this->GetTransform(), TargetEnemy);
+		}
 	}
 	Destroy();
 }
