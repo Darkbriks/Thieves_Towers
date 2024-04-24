@@ -7,7 +7,6 @@
 enum EEnemyType : int;
 enum ETypeOfDamage : int;
 class UPaperSpriteComponent;
-class UWidgetComponent;
 class AProjectile;
 class APath;
 
