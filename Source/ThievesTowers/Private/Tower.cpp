@@ -56,7 +56,6 @@ void ATower::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 {
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Overlap"));
 		EnemiesInRange.Add(Cast<AEnemy>(OtherActor));
 	}
 }
@@ -65,7 +64,6 @@ void ATower::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 {
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy End Overlap"));
 		EnemiesInRange.Remove(Cast<AEnemy>(OtherActor));
 		if (EnemiesInRange.Num() <= 0 && FlipbookComponent->GetFlipbook() == AttackAnimation) { FlipbookComponent->SetFlipbook(IdleAnimation); }
 	}
@@ -91,6 +89,8 @@ void ATower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!bIsActivated) { return; }
+
 	AttackCooldown += DeltaTime;
 	if (AttackCooldown >= AttackSpeed) { if (Attack()) { AttackCooldown = 0.0f; } }
 
@@ -106,4 +106,20 @@ void ATower::Tick(float DeltaTime)
 
 	// Si le temps avant la prochaine attaque est inférieur à ProjectileLaunchTime, on change l'animation
 	if (AttackCooldown >= AttackSpeed - ProjectileLaunchTime && EnemiesInRange.Num() > 0 && FlipbookComponent->GetFlipbook() != AttackAnimation) { FlipbookComponent->SetFlipbook(AttackAnimation); }
+}
+
+//////////////////////////////////////////////////////////////////////////
+/// ATower - Public Methods
+//////////////////////////////////////////////////////////////////////////
+void ATower::Activate()
+{
+	bIsActivated = true;
+}
+
+void ATower::Deactivate()
+{
+	bIsActivated = false;
+	FlipbookComponent->SetFlipbook(IdleAnimation);
+	AttackCooldown = 0.0f;
+	AttackAnimationCurrentTime = 0.0f;
 }

@@ -20,6 +20,8 @@ class THIEVESTOWERS_API ATower : public AActor
 	float AttackAnimationCurrentTime = 0.0f;
 	TArray<AEnemy*> EnemiesInRange;
 
+	bool bIsActivated = true;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* SceneComponent;
 
@@ -72,4 +74,9 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void Activate();
+
+	UFUNCTION(BlueprintCallable)
+	void Deactivate();
 };
