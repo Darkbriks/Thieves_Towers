@@ -11,7 +11,7 @@ class THIEVESTOWERS_API UProjectileEffect : public UObject
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Effect")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect")
 	FName EffectName;
 	
 public:
