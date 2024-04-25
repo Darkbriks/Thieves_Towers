@@ -1,9 +1,14 @@
 #include "Tower.h"
-#include "Enemy.h"
+
+#include "GA_ThievesTowers.h"
+
+#include "Enemy/Enemy.h"
 #include "Projectile.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
+
+#include "Kismet/KismetMathLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 /// ATower - Constructor
@@ -30,12 +35,43 @@ ATower::ATower()
 //////////////////////////////////////////////////////////////////////////
 /// ATower - Protected Methods
 //////////////////////////////////////////////////////////////////////////
+int ATower::IndexOfFirstEnemyInRange()
+{
+	int Index = -1;
+	for (int i = 0; i < EnemiesInRange.Num(); i++) { if (EnemiesInRange[i]->CanBeTargeted()) { Index = i; break; } }
+	return Index;
+}
+
+AEnemy* ATower::GetFirstEnemyInRange()
+{
+	for (AEnemy* Enemy : EnemiesInRange) { if (Enemy->CanBeTargeted()) { return Enemy; } }
+	return nullptr;
+}
+
+void ATower::Anim(float DeltaTime)
+{
+	if (AnimationCooldown > 0)
+	{
+		if (FlipbookComponent->GetFlipbook() != AttackAnimation) { FlipbookComponent->SetFlipbook(AttackAnimation); }
+	}
+	else if (AttackCooldown > AnimationOverflow)
+	{
+		if (FlipbookComponent->GetFlipbook() != IdleAnimation) { FlipbookComponent->SetFlipbook(IdleAnimation); }
+	}
+
+	if (AEnemy* Enemy = GetFirstEnemyInRange())
+	{
+		TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Enemy->GetActorLocation());
+		const FRotator CurrentRotation = GetActorRotation();
+		const FRotator NewRotation = FMath::RInterpConstantTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
+		SetActorRotation(NewRotation);
+	}
+}
+
 bool ATower::Attack()
 {
-	if (EnemiesInRange.Num() > 0)
+	if (AEnemy* Enemy = GetFirstEnemyInRange())
 	{
-		AEnemy* Enemy = EnemiesInRange[0];
-
 		FVector ProjectileLocation = GetActorLocation();
 		ProjectileLocation += GetActorForwardVector() * ProjectileXOffset;
 		ProjectileLocation += GetActorRightVector() * ProjectileYOffset;
@@ -54,10 +90,7 @@ bool ATower::Attack()
 
 void ATower::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->IsA(AEnemy::StaticClass()))
-	{
-		EnemiesInRange.Add(Cast<AEnemy>(OtherActor));
-	}
+	if (OtherActor->IsA(AEnemy::StaticClass())) { EnemiesInRange.Add(Cast<AEnemy>(OtherActor)); }
 }
 
 void ATower::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -65,7 +98,7 @@ void ATower::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
 		EnemiesInRange.Remove(Cast<AEnemy>(OtherActor));
-		if (EnemiesInRange.Num() <= 0 && FlipbookComponent->GetFlipbook() == AttackAnimation) { FlipbookComponent->SetFlipbook(IdleAnimation); }
+		if (IndexOfFirstEnemyInRange() != -1) { AnimationCooldown = 0.0f; }
 	}
 }
 
@@ -75,12 +108,22 @@ void ATower::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 void ATower::BeginPlay()
 {
 	Super::BeginPlay();
-	AttackAnimationTotalTime = AttackAnimation->GetTotalDuration();
+	AnimationOverflow = AttackAnimation->GetTotalDuration() - ProjectileLaunchTime;
 	FlipbookComponent->SetFlipbook(IdleAnimation);
 	CapsuleComponent->SetCapsuleRadius(AttackRange);
 	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ATower::BeginOverlap);
 	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &ATower::EndOverlap);
+
+	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->AddTower(this); }
+	Activate();
 }
+
+void ATower::Destroyed()
+{
+	Super::Destroyed();
+	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->RemoveTower(this); }
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 /// ATower - Public Overrides Methods - AActor
@@ -88,24 +131,22 @@ void ATower::BeginPlay()
 void ATower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	if (!bIsActivated) { return; }
-
-	AttackCooldown += DeltaTime;
-	if (AttackCooldown >= AttackSpeed) { if (Attack()) { AttackCooldown = 0.0f; } }
-
-	if (EnemiesInRange.Num() > 0)
+	
+	if (AttackCooldown < AttackSpeed - ProjectileLaunchTime + DeltaTime) { AttackCooldown += DeltaTime; }
+	else if (IndexOfFirstEnemyInRange() != -1)
 	{
-		AEnemy* Enemy = EnemiesInRange[0];
-		FRotator LookAtRotation = FRotationMatrix::MakeFromX(Enemy->GetActorLocation() - GetActorLocation()).Rotator();
-		SetActorRotation(FRotator(0.0f, LookAtRotation.Yaw, 0.0f));
+		if (AnimationCooldown < ProjectileLaunchTime + DeltaTime) { AnimationCooldown += DeltaTime; }
+		else
+		{
+			Attack();
+			AttackCooldown = 0.0f;
+			AnimationCooldown = 0.0f;
+		}
 	}
+	else { AnimationCooldown = 0.0f; }
 
-	if (FlipbookComponent->GetFlipbook() == AttackAnimation) { AttackAnimationCurrentTime += DeltaTime; }
-	if (AttackAnimationCurrentTime >= AttackAnimationTotalTime) { AttackAnimationCurrentTime = 0.0f; FlipbookComponent->SetFlipbook(IdleAnimation); }
-
-	// Si le temps avant la prochaine attaque est inférieur à ProjectileLaunchTime, on change l'animation
-	if (AttackCooldown >= AttackSpeed - ProjectileLaunchTime && EnemiesInRange.Num() > 0 && FlipbookComponent->GetFlipbook() != AttackAnimation) { FlipbookComponent->SetFlipbook(AttackAnimation); }
+	Anim(DeltaTime);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -119,7 +160,7 @@ void ATower::Activate()
 void ATower::Deactivate()
 {
 	bIsActivated = false;
-	FlipbookComponent->SetFlipbook(IdleAnimation);
 	AttackCooldown = 0.0f;
-	AttackAnimationCurrentTime = 0.0f;
+	AnimationCooldown = 0.0f;
+	AnimationOverflow = 0.0f;
 }

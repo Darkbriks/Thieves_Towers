@@ -16,10 +16,12 @@ class THIEVESTOWERS_API ATower : public AActor
 	GENERATED_BODY()
 
 	float AttackCooldown = 0.0f;
-	float AttackAnimationTotalTime = 0.0f;
-	float AttackAnimationCurrentTime = 0.0f;
+	float AnimationCooldown = 0.0f;
+	float AnimationOverflow = 0.0f;
 	TArray<AEnemy*> EnemiesInRange;
+	FRotator TargetRotation;
 
+	// States
 	bool bIsActivated = true;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
@@ -58,7 +60,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Animation", meta = (ToolTip = "Time in seconds to launch the projectile after the attack animation starts"))
 	float ProjectileLaunchTime = 0.5f;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Animation")
+	float RotationSpeed = 250.0f;
+
+	int IndexOfFirstEnemyInRange();
+	AEnemy* GetFirstEnemyInRange();
+	void Anim(float DeltaTime);
 	bool Attack();
 
 	UFUNCTION()
@@ -68,6 +76,7 @@ protected:
 	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 public:	
 	ATower();
