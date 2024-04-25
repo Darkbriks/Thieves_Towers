@@ -45,7 +45,7 @@ protected:
 public:
 	virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy) override;
 
-	void Tick(float DeltaTime) override;
-	bool IsTickable() const override { return true; }
-	TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(ULightningEffect, STATGROUP_Tickables); }
+	virtual void Tick(float DeltaTime) override;
+	virtual bool IsTickable() const override { return true; }
+	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(ULightningEffect, STATGROUP_Tickables); }
 };
