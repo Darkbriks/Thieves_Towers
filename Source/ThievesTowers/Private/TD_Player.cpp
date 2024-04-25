@@ -143,7 +143,7 @@ void ATD_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATD_Player::Move);
-		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATD_Player::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ATD_Player::Look);
 		EnhancedInputComponent->BindAction(UpDownAction, ETriggerEvent::Triggered, this, &ATD_Player::UpDown);
 	}
 }
