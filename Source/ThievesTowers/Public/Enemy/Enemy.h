@@ -16,19 +16,16 @@ class THIEVESTOWERS_API AEnemy : public AActor
 	GENERATED_BODY()
 
 	// Variables
-	int Health = 0;
+	int Life = 0;
+	int LifeOverflows = 0;
+
+	float RemainingHealTime = 0.0f;
 
 	float RemainingFreezeTime = 0.0f;
 	int DamageAfterFreeze = 0;
 	TArray<TEnumAsByte<ETypeOfDamage>> FreezeTypesOfDamage = TArray<TEnumAsByte<ETypeOfDamage>>();
 	
-	float CurrentPathDistance = 0.0f;
-	float CurrentPathLength = 0.0f;
-	float TraveledDistance = 0.0f;
-	float TotalDistance = 0.0f;
 	APath* CurrentPath = nullptr;
-
-	UMaterialInstanceDynamic* DynamicMaterial = nullptr;
 	
 	TArray<AProjectile*> Projectiles;
 
@@ -40,9 +37,18 @@ class THIEVESTOWERS_API AEnemy : public AActor
 	UPaperSpriteComponent* SpriteComponent;
 	
 protected:
+	float CurrentPathDistance = 0.0f;
+	float CurrentPathLength = 0.0f;
+	float TraveledDistance = 0.0f;
+	float TotalDistance = 0.0f;
+
+	bool bCanBeTargeted = true;
+
+	UMaterialInstanceDynamic* DynamicMaterial = nullptr;
+	
 	// Attributes
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
-	int StartHealth = 1;
+	int StartLife = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
 	int Damage = 1;
@@ -59,26 +65,43 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
 	float TargetZOffset = 150.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
+    FColor HealColor = FColor(168, 202, 88, 255);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
+	float HealEffectTime = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
+	float HealEffectAlpha = 0.5f;
+
+	// Getters
+	UPaperSpriteComponent* GetSpriteComponent() const { return SpriteComponent; }
+	int GetLifeOverflows() const { return LifeOverflows; }
+
+	// Setters
+	void SetLifeOverflows(int NewLifeOverflows) { LifeOverflows = NewLifeOverflows; }
+
 	// Methods
 	void MoveAlongPath(float DeltaTime);
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	void Die();
+	virtual void Die();
 	
 public:
 	// Constructor
 	AEnemy();
 
-	void InitializeEnemy(APath* NewPath, float NewCurrentDistance = 0.0f);
+	virtual void InitializeEnemy(APath* NewPath, float NewCurrentDistance = 0.0f);
 
 	// Getters
-	int GetStartHealth() const { return StartHealth; }
-	int GetHealth() const { return Health; }
+	int GetStartLife() const { return StartLife; }
+	int GetLife() const { return Life; }
 	int GetDamage() const { return Damage; }
 	float GetSpeed() const { return Speed; }
 	TEnumAsByte<EEnemyType> GetEnemyType() const { return EnemyType; }
 	TArray<TEnumAsByte<ETypeOfDamage>> GetResistances() const { return Resistances; }
 	float GetTargetZOffset() const { return TargetZOffset; }
+	bool CanBeTargeted() const { return bCanBeTargeted; }
 	
 	float GetCurrentPathDistance() const { return CurrentPathDistance; }
 	float GetTraveledDistance() const { return TraveledDistance; }
@@ -87,12 +110,10 @@ public:
 
 	TArray<AProjectile*> GetProjectiles() const { return Projectiles; }
 
-	// Setters
-	//void SetFreezeTime(float NewFreezeTime) { RemainingFreezeTime = NewFreezeTime; }
-
 	// Methods
-	void TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-	void Freeze(float FreezeTime, FColor FreezeColor, int NewDamageAfterFreeze = 0, TArray<TEnumAsByte<ETypeOfDamage>> NewTypesOfDamage = TArray<TEnumAsByte<ETypeOfDamage>>());
+	void Heal(int HealAmount);
+	virtual void TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	virtual void Freeze(float FreezeTime, FColor FreezeColor, int NewDamageAfterFreeze = 0, TArray<TEnumAsByte<ETypeOfDamage>> NewTypesOfDamage = TArray<TEnumAsByte<ETypeOfDamage>>());
 	void AddProjectile(AProjectile* NewProjectile) { Projectiles.Add(NewProjectile); }
 
 	// Overriden methods

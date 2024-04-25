@@ -1,5 +1,6 @@
-#include "Enemy.h"
+#include "Enemy/Enemy.h"
 
+#include "GA_ThievesTowers.h"
 #include "Path.h"
 #include "Projectile.h"
 #include "Engine/DamageEvents.h"
@@ -26,7 +27,7 @@ AEnemy::AEnemy()
 
 void AEnemy::InitializeEnemy(APath* NewPath, float NewCurrentDistance)
 {
-	Health = StartHealth;
+	Life = StartLife;
 	this->CurrentPath = NewPath;
 	this->CurrentPathDistance = NewCurrentDistance;
 	this->TraveledDistance = NewCurrentDistance;
@@ -36,6 +37,8 @@ void AEnemy::InitializeEnemy(APath* NewPath, float NewCurrentDistance)
 	while (ptr) { TotalDistance += ptr->GetSplineComponent()->GetSplineLength(); ptr = ptr->GetNextPath(); }
 
 	DynamicMaterial = Cast<UMaterialInstanceDynamic>(SpriteComponent->CreateAndSetMaterialInstanceDynamic(0));
+
+	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->AddEnemy(this); }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,20 +65,35 @@ void AEnemy::MoveAlongPath(float DeltaTime)
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Health -= DamageAmount;
-	if (Health <= 0.0f) { Die(); }
+	if (LifeOverflows > 0)
+	{
+		LifeOverflows-= DamageAmount;
+		if (LifeOverflows <= 0) { Life += LifeOverflows; LifeOverflows = 0; }
+	}
+	else { Life -= DamageAmount; }
+	
+	if (Life <= 0.0f) { Die(); }
 	return DamageAmount;
 }
 
 void AEnemy::Die()
 {
 	for (AProjectile* Projectile : Projectiles) { Projectile->Destroy(); }
+	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->RemoveEnemy(this); }
 	Destroy();
 }
 
 //////////////////////////////////////////////////////////////////////////
 /// AEnemy - Public Methods
 //////////////////////////////////////////////////////////////////////////
+void AEnemy::Heal(int HealAmount)
+{
+	if (HealAmount > 0 && Life + HealAmount <= StartLife) { Life += HealAmount; }
+	else { Life = StartLife; }
+	RemainingHealTime = HealEffectTime;
+	DynamicMaterial->SetVectorParameterValue(FName("Color"), HealColor);
+}
+
 void AEnemy::TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	for (TEnumAsByte<ETypeOfDamage> TypeOfDamage : TypesOfDamage) { if (Resistances.Contains(TypeOfDamage)) { return; } }
@@ -112,6 +130,13 @@ void AEnemy::Tick(float DeltaTime)
 			FreezeTypesOfDamage.Empty();
 		}
 		return;
+	}
+	if (RemainingHealTime > 0.0f)
+	{
+		RemainingHealTime -= DeltaTime;
+		float HealPercent = RemainingHealTime / HealEffectTime;
+		if (RemainingHealTime > 0) { DynamicMaterial->SetScalarParameterValue(FName("Alpha"), FMath::Lerp(1.0f, HealEffectAlpha, HealPercent)); }
+		else { DynamicMaterial->SetScalarParameterValue(FName("Alpha"), 1.0f); }
 	}
 	MoveAlongPath(DeltaTime);
 }

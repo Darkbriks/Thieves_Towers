@@ -1,5 +1,5 @@
 #include "WaveGenerator.h"
-#include "Enemy.h"
+#include "Enemy/Enemy.h"
 #include "Path.h"
 #include "Components/SplineComponent.h"
 #include "Struct/WaveParams.h"
