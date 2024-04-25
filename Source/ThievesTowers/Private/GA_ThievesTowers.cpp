@@ -1,23 +1,31 @@
 #include "GA_ThievesTowers.h"
 #include "ProjectileEffect/ProjectileEffect.h"
 #include "Card.h"
-#include "Containers/Ticker.h"
-
-/*void UGA_ThievesTowers::Init()
-{
-	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UGA_ThievesTowers::Tick));
-	Super::Init();
-}
-
-void UGA_ThievesTowers::Shutdown()
-{
-	FTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
-	Super::Shutdown();
-}*/
+#include "Tower.h"
+#include "Enemy/Little/Enemy_Silly.h"
 
 void UGA_ThievesTowers::Tick(float DeltaTime)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("UGA_ThievesTowers::Tick"));
+	TArray<ATower*> TowersToDesactivate;
+	for (AEnemy* Enemy : Enemies)
+	{
+		if (AEnemy_Silly* SillyEnemy = Cast<AEnemy_Silly>(Enemy))
+		{
+			for (ATower* Tower : Towers)
+			{
+				if (FVector::Dist(SillyEnemy->GetActorLocation(), Tower->GetActorLocation()) <= SillyEnemy->GetRange())
+				{
+					TowersToDesactivate.Add(Tower);
+				}
+			}
+		}
+	}
+
+	for (ATower* Tower : Towers)
+	{
+		if (TowersToDesactivate.Contains(Tower)) { Tower->Deactivate(); }
+		else { Tower->Activate(); }
+	}
 }
 
 UProjectileEffect* UGA_ThievesTowers::GetProjectileEffect(TSubclassOf<UProjectileEffect> EffectClass)
@@ -49,3 +57,8 @@ void UGA_ThievesTowers::RemoveCardFromHand(TSubclassOf<ACard> CardClass)
 	if (CreateHandDelegate.ExecuteIfBound(Hand)) { UE_LOG(LogTemp, Warning, TEXT("CreateHandDelegate executed")); }
 	else { UE_LOG(LogTemp, Warning, TEXT("CreateHandDelegate not executed")); }
 }
+
+void UGA_ThievesTowers::AddTower(ATower* Tower) { Towers.Add(Tower); }
+void UGA_ThievesTowers::RemoveTower(ATower* Tower) { Towers.Remove(Tower); }
+void UGA_ThievesTowers::AddEnemy(AEnemy* Enemy) { Enemies.Add(Enemy); }
+void UGA_ThievesTowers::RemoveEnemy(AEnemy* Enemy) { Enemies.Remove(Enemy); }
