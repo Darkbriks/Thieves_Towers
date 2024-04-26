@@ -41,6 +41,8 @@ public:
 	int GetMaxHandSize() { return MaxHandSize; }
 	TArray<TSubclassOf<ACard>> GetHand() { return Hand; }
 	TArray<AEnemy*> GetEnemies() { return Enemies; }
+	int GetNumberEnemiesOfType(TSubclassOf<AEnemy> EnemyClass);
+	int GetNumberEnemiesOfTypeInRange(TSubclassOf<AEnemy> EnemyClass, FVector Location, float Range);
 
 	UFUNCTION(BlueprintCallable)
 	void AddCardToHand(TSubclassOf<ACard> CardClass);

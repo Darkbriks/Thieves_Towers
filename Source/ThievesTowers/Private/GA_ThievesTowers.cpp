@@ -41,6 +41,20 @@ UProjectileEffect* UGA_ThievesTowers::GetProjectileEffect(TSubclassOf<UProjectil
 	return NewEffect;
 }
 
+int UGA_ThievesTowers::GetNumberEnemiesOfType(TSubclassOf<AEnemy> EnemyClass)
+{
+	int NumberEnemies = 0;
+	for (AEnemy* Enemy : Enemies) { if (Enemy->GetClass() == EnemyClass) { NumberEnemies++; } }
+	return NumberEnemies;
+}
+
+int UGA_ThievesTowers::GetNumberEnemiesOfTypeInRange(TSubclassOf<AEnemy> EnemyClass, FVector Location, float Range)
+{
+	int NumberEnemies = 0;
+	for (AEnemy* Enemy : Enemies) { if (Enemy->GetClass() == EnemyClass) { if (FVector::Dist(Location, Enemy->GetActorLocation()) <= Range) { NumberEnemies++; } } }
+	return NumberEnemies;
+}
+
 void UGA_ThievesTowers::AddCardToHand(TSubclassOf<ACard> CardClass)
 {
 	if (Hand.Num() >= MaxHandSize) { return; }
