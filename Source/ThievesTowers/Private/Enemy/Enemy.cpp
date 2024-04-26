@@ -78,7 +78,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 
 void AEnemy::Die()
 {
-	for (AProjectile* Projectile : Projectiles) { Projectile->Destroy(); }
+	for (AProjectile* Projectile : Projectiles) { if (IsValid(Projectile)) { Projectile->Destroy(); } }
 	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->RemoveEnemy(this); }
 	Destroy();
 }
