@@ -25,8 +25,6 @@ class THIEVESTOWERS_API AEnemy : public AActor
 	int DamageAfterFreeze = 0;
 	TArray<TEnumAsByte<ETypeOfDamage>> FreezeTypesOfDamage = TArray<TEnumAsByte<ETypeOfDamage>>();
 	
-	APath* CurrentPath = nullptr;
-	
 	TArray<AProjectile*> Projectiles;
 
 	// Components
@@ -41,6 +39,7 @@ protected:
 	float CurrentPathLength = 0.0f;
 	float TraveledDistance = 0.0f;
 	float TotalDistance = 0.0f;
+	APath* CurrentPath = nullptr;
 
 	bool bCanBeTargeted = true;
 
@@ -78,9 +77,6 @@ protected:
 	UPaperSpriteComponent* GetSpriteComponent() const { return SpriteComponent; }
 	int GetLifeOverflows() const { return LifeOverflows; }
 
-	// Setters
-	void SetLifeOverflows(int NewLifeOverflows) { LifeOverflows = NewLifeOverflows; }
-
 	// Methods
 	void MoveAlongPath(float DeltaTime);
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -109,6 +105,11 @@ public:
 	APath* GetCurrentPath() const { return CurrentPath; }
 
 	TArray<AProjectile*> GetProjectiles() const { return Projectiles; }
+
+	// Setters
+	void SetMaxLife(int NewMaxLife) { StartLife = FMath::Max(1, NewMaxLife); }
+	void SetLife(int NewLife) { Life = FMath::Clamp(NewLife, 1, StartLife); }
+	void SetLifeOverflows(int NewLifeOverflows) { LifeOverflows = NewLifeOverflows; }
 
 	// Methods
 	void Heal(int HealAmount);
