@@ -13,6 +13,7 @@ class THIEVESTOWERS_API AWaveGenerator : public AActor
 	GENERATED_BODY()
 
 	// Variables
+	bool bIsStarted = false;
 	float TimeSinceLastSpawn = 0.0f;
 	int CurrentEnemyIndex = 0;
 	int CurrentEnemyCount = 0;
@@ -27,6 +28,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Generator")
 	APath* StartPath;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Generator")
+    int RoundNumber = 0;
+
 	// Methods
 	void SpawnEnemy();
 
@@ -39,4 +43,7 @@ public:
 
 	// Overridden methods
 	virtual void Tick(float DeltaTime) override;
+
+	int GetRoundNumber() const { return RoundNumber; }
+	void StartWaveGeneration() { bIsStarted = true; }
 };

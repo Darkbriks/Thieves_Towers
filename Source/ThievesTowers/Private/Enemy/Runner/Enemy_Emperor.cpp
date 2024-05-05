@@ -4,13 +4,13 @@
 
 void AEnemy_Emperor::Buff(AEnemy* Enemy)
 {
-	Enemy->SetMaxLife(Enemy->GetStartLife() + MaxLifeBuff);
+	Enemy->SetMaxLife(Enemy->GetMaxLife() + MaxLifeBuff);
 	Enemy->SetLife(Enemy->GetLife() + MaxLifeBuff);
 }
 
 void AEnemy_Emperor::Unbuff(AEnemy* Enemy)
 {
-	Enemy->SetMaxLife(Enemy->GetStartLife());
+	Enemy->SetMaxLife(Enemy->GetMaxLife());
 	Enemy->SetLife(Enemy->GetLife() - MaxLifeBuff);
 }
 

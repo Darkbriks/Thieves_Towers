@@ -22,5 +22,5 @@ protected:
 	void SpawnEnemies();
 
 public:
-	virtual void Die() override;
+	virtual void Die(bool bExecuteByTower) override;
 };

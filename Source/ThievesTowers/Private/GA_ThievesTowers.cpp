@@ -1,9 +1,11 @@
 #include "GA_ThievesTowers.h"
 #include "ProjectileEffect/ProjectileEffect.h"
-#include "Card.h"
 #include "Tower.h"
 #include "Enemy/Little/Enemy_Silly.h"
 
+//////////////////////////////////////////////////////////////////////////
+/// UGA_ThievesTowers - Tick
+//////////////////////////////////////////////////////////////////////////
 void UGA_ThievesTowers::Tick(float DeltaTime)
 {
 	TArray<ATower*> TowersToDesactivate;
@@ -53,23 +55,6 @@ int UGA_ThievesTowers::GetNumberEnemiesOfTypeInRange(TSubclassOf<AEnemy> EnemyCl
 	int NumberEnemies = 0;
 	for (AEnemy* Enemy : Enemies) { if (Enemy->GetClass() == EnemyClass) { if (FVector::Dist(Location, Enemy->GetActorLocation()) <= Range) { NumberEnemies++; } } }
 	return NumberEnemies;
-}
-
-void UGA_ThievesTowers::AddCardToHand(TSubclassOf<ACard> CardClass)
-{
-	if (Hand.Num() >= MaxHandSize) { return; }
-	Hand.Add(CardClass);
-	
-	if (CreateHandDelegate.ExecuteIfBound(Hand)) { UE_LOG(LogTemp, Warning, TEXT("CreateHandDelegate executed")); }
-	else { UE_LOG(LogTemp, Warning, TEXT("CreateHandDelegate not executed")); }
-}
-
-void UGA_ThievesTowers::RemoveCardFromHand(TSubclassOf<ACard> CardClass)
-{
-	for (int i = 0; i < Hand.Num(); i++) { if (Hand[i] == CardClass) { Hand.RemoveAt(i); break; } }
-	
-	if (CreateHandDelegate.ExecuteIfBound(Hand)) { UE_LOG(LogTemp, Warning, TEXT("CreateHandDelegate executed")); }
-	else { UE_LOG(LogTemp, Warning, TEXT("CreateHandDelegate not executed")); }
 }
 
 void UGA_ThievesTowers::AddTower(ATower* Tower) { Towers.Add(Tower); }

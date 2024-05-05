@@ -1,4 +1,5 @@
 #include "WaveGenerator.h"
+#include "GA_ThievesTowers.h"
 #include "Enemy/Enemy.h"
 #include "Path.h"
 #include "Components/SplineComponent.h"
@@ -25,7 +26,14 @@ void AWaveGenerator::SpawnEnemy()
 	if (CurrentEnemyCount >= Waves[CurrentEnemyIndex].EnemyCount)
 	{
 		CurrentEnemyIndex++; CurrentEnemyCount = 0;
-		if (CurrentEnemyIndex >= Waves.Num()) { Destroy(); }
+		if (CurrentEnemyIndex >= Waves.Num())
+		{
+			if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetWorld()->GetGameInstance()))
+			{
+				GameInstance->GetMapManager()->RemoveWave(this);
+			}
+			Destroy();
+		}
 	}
 }
 
@@ -70,6 +78,8 @@ void AWaveGenerator::BeginPlay()
 void AWaveGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!bIsStarted) { return; }
 
 	if (CurrentEnemyCount == 0)
 	{

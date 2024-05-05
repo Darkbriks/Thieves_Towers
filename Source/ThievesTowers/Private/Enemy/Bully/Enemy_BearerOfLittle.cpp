@@ -12,8 +12,8 @@ void AEnemy_BearerOfLittle::SpawnEnemies()
 	}
 }
 
-void AEnemy_BearerOfLittle::Die()
+void AEnemy_BearerOfLittle::Die(bool bExecuteByTower)
 {
 	SpawnEnemies();
-	Super::Die();
+	Super::Die(bExecuteByTower);
 }

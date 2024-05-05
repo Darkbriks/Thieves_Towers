@@ -1,5 +1,4 @@
 #include "Enemy/Enemy.h"
-
 #include "GA_ThievesTowers.h"
 #include "Path.h"
 #include "Projectile.h"
@@ -27,7 +26,8 @@ AEnemy::AEnemy()
 
 void AEnemy::InitializeEnemy(APath* NewPath, float NewCurrentDistance)
 {
-	Life = StartLife;
+	Life = MaxLife;
+	StartLife = MaxLife;
 	this->CurrentPath = NewPath;
 	this->CurrentPathDistance = NewCurrentDistance;
 	this->TraveledDistance = NewCurrentDistance;
@@ -53,14 +53,14 @@ void AEnemy::MoveAlongPath(float DeltaTime)
 		{
 			CurrentPathDistance -= CurrentPathLength;
 			CurrentPath = CurrentPath->GetNextPath();
-			if (!CurrentPath) { Die(); return; }
+			if (!CurrentPath) { Die(false); return; }
 			CurrentPathLength = CurrentPath->GetSplineComponent()->GetSplineLength();
 		}
 
 		SetActorLocation(CurrentPath->GetSplineComponent()->GetLocationAtDistanceAlongSpline(CurrentPathDistance, ESplineCoordinateSpace::World));
 		SetActorRotation(CurrentPath->GetSplineComponent()->GetRotationAtDistanceAlongSpline(CurrentPathDistance, ESplineCoordinateSpace::World));
 	}
-	else { Die(); }
+	else { Die(false); }
 }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -72,14 +72,19 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 	else { Life -= DamageAmount; }
 	
-	if (Life <= 0.0f) { Die(); }
+	if (Life <= 0.0f) { Die(true); }
 	return DamageAmount;
 }
 
-void AEnemy::Die()
+void AEnemy::Die(bool bExecuteByTower)
 {
-	for (AProjectile* Projectile : Projectiles) { if (IsValid(Projectile)) { Projectile->Destroy(); } }
-	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->RemoveEnemy(this); }
+	//for (AProjectile* Projectile : Projectiles) { if (IsValid(Projectile)) { Projectile->Destroy(); } }
+	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+	{
+		GameInstance->RemoveEnemy(this);
+		if (bExecuteByTower) { GameInstance->GetMapManager()->AddGold(StartLife); }
+		else { GameInstance->GetMapManager()->AddLife(-Damage); }
+	}
 	Destroy();
 }
 
@@ -88,8 +93,8 @@ void AEnemy::Die()
 //////////////////////////////////////////////////////////////////////////
 void AEnemy::Heal(int HealAmount)
 {
-	if (HealAmount > 0 && Life + HealAmount <= StartLife) { Life += HealAmount; }
-	else { Life = StartLife; }
+	if (HealAmount > 0 && Life + HealAmount <= MaxLife) { Life += HealAmount; }
+	else { Life = MaxLife; }
 	RemainingHealTime = HealEffectTime;
 	DynamicMaterial->SetVectorParameterValue(FName("Color"), HealColor);
 }

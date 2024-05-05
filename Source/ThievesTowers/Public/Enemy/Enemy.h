@@ -16,6 +16,7 @@ class THIEVESTOWERS_API AEnemy : public AActor
 	GENERATED_BODY()
 
 	// Variables
+	int StartLife = 0;
 	int Life = 0;
 	int LifeOverflows = 0;
 
@@ -47,7 +48,7 @@ protected:
 	
 	// Attributes
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
-	int StartLife = 1;
+	int MaxLife = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
 	int Damage = 1;
@@ -81,7 +82,7 @@ protected:
 	void MoveAlongPath(float DeltaTime);
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	virtual void Die();
+	virtual void Die(bool bExecuteByTower);
 	
 public:
 	// Constructor
@@ -90,7 +91,7 @@ public:
 	virtual void InitializeEnemy(APath* NewPath, float NewCurrentDistance = 0.0f);
 
 	// Getters
-	int GetStartLife() const { return StartLife; }
+	int GetMaxLife() const { return MaxLife; }
 	int GetLife() const { return Life; }
 	int GetDamage() const { return Damage; }
 	float GetSpeed() const { return Speed; }
@@ -107,8 +108,8 @@ public:
 	TArray<AProjectile*> GetProjectiles() const { return Projectiles; }
 
 	// Setters
-	void SetMaxLife(int NewMaxLife) { StartLife = FMath::Max(1, NewMaxLife); }
-	void SetLife(int NewLife) { Life = FMath::Clamp(NewLife, 1, StartLife); }
+	void SetMaxLife(int NewMaxLife) { MaxLife = FMath::Max(1, NewMaxLife); }
+	void SetLife(int NewLife) { Life = FMath::Clamp(NewLife, 1, MaxLife); }
 	void SetLifeOverflows(int NewLifeOverflows) { LifeOverflows = NewLifeOverflows; }
 
 	// Methods

@@ -6,7 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GA_ThievesTowers.h"
 #include "InputActionValue.h"
-#include "Card.h"
+#include "MapManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 /// ATD_Player - Constructor
@@ -19,14 +19,10 @@ ATD_Player::ATD_Player()
 	Root->SetMobility(EComponentMobility::Movable);
 	SetRootComponent(Root);
 
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	/*Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(Root);
-
-	CardHandSpline = CreateDefaultSubobject<USplineComponent>(TEXT("CardHand"));
-	CardHandSpline->SetupAttachment(Root);
-
-	CardHandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("CardHandSceneComponent"));
-	CardHandSceneComponent->SetupAttachment(Root);
+	Camera->SetProjectionMode(ECameraProjectionMode::Orthographic);
+	Camera->SetAspectRatio(16.0f / 9.0f);*/
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -46,23 +42,6 @@ void ATD_Player::BeginPlay()
 	}
 
 	TT_GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance());
-	
-	if (TT_GameInstance)
-	{
-		// Assigner le Delegate a la game instance
-		TT_GameInstance->CreateHandDelegate.BindUObject(this, &ATD_Player::CreateHand);
-
-		CardHandPositions.Empty(); CardHandRotations.Empty();
-		// Initialiser les positions et rotations des cartes dans la main
-		const float SplineLength = CardHandSpline->GetSplineLength();
-		const int NumberOfSlots = TT_GameInstance->GetMaxHandSize() * 2 - 1;
-		for (int i = 0; i < NumberOfSlots; i++)
-		{
-			float Distance = SplineLength * i / (NumberOfSlots - 1);
-			CardHandPositions.Add(CardHandSpline->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::Local));
-			CardHandRotations.Add(CardHandSpline->GetRotationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::Local));
-		}
-	}
 
 	// Activer le cursor
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -92,11 +71,6 @@ void ATD_Player::UpDown(const FInputActionValue& Value)
 	NewLocation.Z += UpDownVector * UpDownSpeed;
 
 	this->SetActorLocation(NewLocation);
-
-	if (TT_GameInstance)
-	{
-		TT_GameInstance->AddCardToHand(ACard::StaticClass());
-	}
 }
 
 void ATD_Player::Look(const FInputActionValue& Value)
@@ -109,25 +83,6 @@ void ATD_Player::Look(const FInputActionValue& Value)
 	NewRotation.Roll = 0;
 
 	this->SetActorRotation(NewRotation);
-}
-
-void ATD_Player::CreateHand(TArray<TSubclassOf<ACard>> NewHand)
-{
-	if (!TT_GameInstance) { return; }
-	
-	for (ACard* Card : CardsInHand) { Card->Destroy(); } CardsInHand.Empty();
-	
-	int StartIndex = ((TT_GameInstance->GetMaxHandSize() * 2 - 1) - (2 * NewHand.Num()) + 1) / 2;
-	for (int i = 0; i < NewHand.Num(); i++)
-	{
-		ACard* NewCard = GetWorld()->SpawnActor<ACard>(NewHand[i], FVector::ZeroVector, FRotator::ZeroRotator);
-		NewCard->AttachToComponent(CardHandSceneComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		NewCard->SetActorRelativeLocation(CardHandPositions[StartIndex + 2 * i]);
-		NewCard->SetActorRelativeRotation(CardHandRotations[StartIndex + 2 * i]);
-		NewCard->SetActorScale3D(CardScale);
-		
-		CardsInHand.Add(NewCard);
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////
