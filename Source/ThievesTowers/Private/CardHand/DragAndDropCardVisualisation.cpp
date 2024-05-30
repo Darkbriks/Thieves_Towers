@@ -43,8 +43,14 @@ void ADragAndDropCardVisualisation::Tick(float DeltaTime)
 	this->SetActorLocation(FVector(0.0f, 0.0f, -500.0f));
 }
 
-void ADragAndDropCardVisualisation::ApplyVisualisation()
+bool ADragAndDropCardVisualisation::ApplyVisualisation()
 {
-	if (TowerToSpawn && this->GetActorLocation().Z != -500.0f) { GetWorld()->SpawnActor<ATower>(TowerToSpawn, GetActorLocation(), FRotator::ZeroRotator); }
+	if (TowerToSpawn && this->GetActorLocation().Z == -500.0f) { Destroy(); return false; }
+	GetWorld()->SpawnActor<ATower>(TowerToSpawn, GetActorLocation(), FRotator::ZeroRotator);
+	Destroy(); return true;
+}
+
+void ADragAndDropCardVisualisation::SuppressVisualisation()
+{
 	Destroy();
 }

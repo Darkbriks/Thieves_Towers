@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 
 #include "CardHand/CardHandWidget.h"
+#include "CardHand/DragAndDropCardVisualisation.h"
 
 AMapManager::AMapManager()
 {
@@ -73,12 +74,14 @@ void AMapManager::PopulateDeck()
 	for (int i = 0; i < CardDeck.Num(); i++) { int RandomIndex = FMath::RandRange(0, CardDeck.Num() - 1); FCardInfo Temp = CardDeck[i]; CardDeck[i] = CardDeck[RandomIndex]; CardDeck[RandomIndex] = Temp; }
 }
 
-void AMapManager::CardPlayed(int CardIndex)
+void AMapManager::CardPlayed(int CardIndex, ADragAndDropCardVisualisation* DragAndDropCardVisualisation)
 {
-	if (CardIndex < 0 || CardIndex >= Hand.Num()) { return; }
+	if (CardIndex < 0 || CardIndex >= Hand.Num()) { DragAndDropCardVisualisation->SuppressVisualisation(); return; }
 	FCardInfo Card = Hand[CardIndex];
-	RemoveCardFromHand(CardIndex);
 
+	if (Mana < Card.GetManaCost() || Gold < Card.GetGoldCost()) { DragAndDropCardVisualisation->SuppressVisualisation(); return; }
+	if (!DragAndDropCardVisualisation->ApplyVisualisation()) { return; }
+	RemoveCardFromHand(CardIndex);
 	Mana -= Card.GetManaCost();
 	Gold -= Card.GetGoldCost();
 }

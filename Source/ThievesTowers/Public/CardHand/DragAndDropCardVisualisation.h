@@ -29,5 +29,6 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-	virtual void ApplyVisualisation();
+	virtual bool ApplyVisualisation();
+	virtual void SuppressVisualisation();
 };

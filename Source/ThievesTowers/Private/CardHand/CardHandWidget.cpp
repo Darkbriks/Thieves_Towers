@@ -35,10 +35,6 @@ FCardInfo UCardHandWidget::GetRandomCard()
 int UCardHandWidget::GetIndexFromCenter(int Index)
 {
 	if (CardHandOverlay == nullptr) { return 0; }
-	// Si on a 1 carte, l'index est 0
-	// Si on a 2 cartes, les index sont -1 et 1
-	// Si on a 3 cartes, les index sont -2, 0 et 2
-	// Si on a 4 cartes, les index sont -3, -1, 1 et 3
 	if (CardWidgets.Num() == 1) { return 0; }
 	return FMath::Lerp(-(CardWidgets.Num() - 1), CardWidgets.Num() - 1, Index / static_cast<float>(CardWidgets.Num() - 1));
 }
@@ -100,32 +96,11 @@ void UCardHandWidget::OnCardDragged(UCardWidget* DraggedCard)
 	DragAndDropCardVisualisation = GetWorld()->SpawnActor<ADragAndDropCardVisualisation>(DragAndDropCardVisualisationClass);
 }
 
-void UCardHandWidget::OnCardDragCancelled(UCardWidget* CancelDraggedCard)
+void UCardHandWidget::OnCardDragCancelled(UCardWidget* CancelDraggedCard, bool bDragIsCancelled)
 {
-	if (CardHandOverlay == nullptr) { return; }
+	if (CardHandOverlay == nullptr || bDragIsCancelled) { DragAndDropCardVisualisation->SuppressVisualisation(); return; }
 	if (DraggedCardReferance == CancelDraggedCard) { DraggedCardReferance = nullptr; }
-	
-	/*FVector WorldPosition;
-	FVector WorldDirection;
-	UGameplayStatics::DeprojectScreenToWorld(GetOwningPlayer(), UWidgetLayoutLibrary::GetMousePositionOnViewport(this) * UWidgetLayoutLibrary::GetViewportScale(this), WorldPosition, WorldDirection);
-
-	TArray<FHitResult> HitResults;
-	UKismetSystemLibrary::LineTraceMulti(GetWorld(), WorldPosition, WorldPosition + WorldDirection * 10000.0f, ETraceTypeQuery::TraceTypeQuery1, false, TArray<AActor*>(), EDrawDebugTrace::None, HitResults, true, FLinearColor::Red, FLinearColor::Green, 0.0f);
-	if (HitResults.Num() > 0)
-	{
-		// On cherche le premier objet qui possède le tag "floor"
-		for (FHitResult HitResult : HitResults)
-		{
-			if (HitResult.GetActor()->ActorHasTag("Floor"))
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit the floor at %s"), *HitResult.ImpactPoint.ToString()));
-				DrawDebugBox(GetWorld(), HitResult.ImpactPoint, FVector(50.0f), FColor::Turquoise, true, 30.0f);
-			}
-		}
-	}*/
-
-	DragAndDropCardVisualisation->ApplyVisualisation();
-	OnCardPlayed.Broadcast(CardWidgets.Find(CancelDraggedCard));
+	OnCardPlayed.Broadcast(CardWidgets.Find(CancelDraggedCard), DragAndDropCardVisualisation);
 }
 
 void UCardHandWidget::OnCardDragEnter(UCardWidget* HoveredCard)

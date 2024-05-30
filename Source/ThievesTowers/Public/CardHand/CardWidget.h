@@ -11,7 +11,7 @@ class UCardWidget;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHoverCard, UCardWidget*, HoveredCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnhoverCard, UCardWidget*, UnhoveredCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDragCard, UCardWidget*, DraggedCard);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCancelDragCard, UCardWidget*, CancelDraggedCard);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCancelDragCard, UCardWidget*, CancelDraggedCard, bool, bDragIsCancelled);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDragCardEnter, UCardWidget*, HoveredCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDragCardLeave, UCardWidget*, UnhoveredCard);
 

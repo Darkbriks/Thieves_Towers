@@ -41,8 +41,9 @@ void UCardWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoint
 
 void UCardWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
+	bool bDragIsCancelled = false; // TODO: True si le bouton droit de la souris a été relâché
 	this->SetRenderOpacity(1.0f);
-	OnCancelDragCard.Broadcast(this);
+	OnCancelDragCard.Broadcast(this, bDragIsCancelled);
 }
 
 void UCardWidget::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) { OnDragCardEnter.Broadcast(this); }

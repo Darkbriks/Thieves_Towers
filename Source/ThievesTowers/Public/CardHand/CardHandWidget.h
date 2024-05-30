@@ -11,7 +11,7 @@ struct FCardInfo;
 class UOverlay;
 class UCardWidget;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardPlayed, int, CardIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCardPlayed, int, CardIndex, ADragAndDropCardVisualisation*, DragAndDropCardVisualisation);
 
 UCLASS(Blueprintable)
 class THIEVESTOWERS_API UCardHandWidget : public UUserWidget, public ICardHandInterface
@@ -72,7 +72,7 @@ protected:
 	void OnCardDragged(UCardWidget* DraggedCard);
 
 	UFUNCTION(BlueprintCallable)
-	void OnCardDragCancelled(UCardWidget* CancelDraggedCard);
+	void OnCardDragCancelled(UCardWidget* CancelDraggedCard, bool bDragIsCancelled);
 
 	UFUNCTION(BlueprintCallable)
 	void OnCardDragEnter(UCardWidget* HoveredCard);

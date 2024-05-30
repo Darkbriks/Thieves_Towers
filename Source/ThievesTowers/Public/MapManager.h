@@ -74,7 +74,7 @@ protected:
 	void PopulateDeck();
 
 	UFUNCTION()
-	void CardPlayed(int CardIndex);
+	void CardPlayed(int CardIndex, ADragAndDropCardVisualisation* DragAndDropCardVisualisation);
 
 public:
 	// Delegates
