@@ -33,6 +33,9 @@ class THIEVESTOWERS_API ATower : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbookComponent* FlipbookComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* BasementMesh;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
 	TSubclassOf<AProjectile> ProjectileClass;

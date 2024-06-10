@@ -30,6 +30,10 @@ ATower::ATower()
 	FlipbookComponent->SetupAttachment(RootComponent);
 	FlipbookComponent->CastShadow = true;
 	FlipbookComponent->SetFlipbook(IdleAnimation);
+
+	BasementMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BasementMesh"));
+	BasementMesh->SetupAttachment(RootComponent);
+	BasementMesh->SetGenerateOverlapEvents(false);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -61,10 +65,10 @@ void ATower::Anim(float DeltaTime)
 
 	if (AEnemy* Enemy = GetFirstEnemyInRange())
 	{
-		TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Enemy->GetActorLocation());
-		const FRotator CurrentRotation = GetActorRotation();
+		TargetRotation = UKismetMathLibrary::FindLookAtRotation(FlipbookComponent->GetComponentLocation(), Enemy->GetActorLocation());
+		const FRotator CurrentRotation = FlipbookComponent->GetComponentRotation();
 		const FRotator NewRotation = FMath::RInterpConstantTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
-		SetActorRotation(NewRotation);
+		FlipbookComponent->SetWorldRotation(NewRotation);
 	}
 }
 
