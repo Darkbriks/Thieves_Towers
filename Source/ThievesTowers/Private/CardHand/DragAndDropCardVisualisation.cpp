@@ -19,7 +19,6 @@ ADragAndDropCardVisualisation::ADragAndDropCardVisualisation()
 void ADragAndDropCardVisualisation::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ADragAndDropCardVisualisation::Tick(float DeltaTime)
@@ -37,15 +36,21 @@ void ADragAndDropCardVisualisation::Tick(float DeltaTime)
 		// On cherche le premier objet qui possède le tag "floor"
 		for (FHitResult HitResult : HitResults)
 		{
-			if (HitResult.GetActor()->ActorHasTag("Floor")) { SetActorLocation(HitResult.ImpactPoint); return; }
+			if (HitResult.GetActor()->ActorHasTag("Floor") && HitResult.Normal.Z >= 0.9f)
+			{
+				bCanSpawn = true;
+				SetActorLocation(HitResult.ImpactPoint);
+				return;
+			}
 		}
 	}
+	bCanSpawn = false;
 	this->SetActorLocation(FVector(0.0f, 0.0f, -500.0f));
 }
 
 bool ADragAndDropCardVisualisation::ApplyVisualisation()
 {
-	if (TowerToSpawn && this->GetActorLocation().Z == -500.0f) { Destroy(); return false; }
+	if (TowerToSpawn && !bCanSpawn) { Destroy(); return false; }
 	GetWorld()->SpawnActor<ATower>(TowerToSpawn, GetActorLocation(), FRotator::ZeroRotator);
 	Destroy(); return true;
 }

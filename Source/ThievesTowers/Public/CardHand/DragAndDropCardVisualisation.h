@@ -11,6 +11,8 @@ UCLASS()
 class THIEVESTOWERS_API ADragAndDropCardVisualisation : public AActor
 {
 	GENERATED_BODY()
+
+	bool bCanSpawn = false;
 	
 public:	
 	ADragAndDropCardVisualisation();
