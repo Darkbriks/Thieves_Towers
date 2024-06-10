@@ -67,7 +67,7 @@ void ATower::Anim(float DeltaTime)
 	{
 		TargetRotation = UKismetMathLibrary::FindLookAtRotation(FlipbookComponent->GetComponentLocation(), Enemy->GetActorLocation());
 		const FRotator CurrentRotation = FlipbookComponent->GetComponentRotation();
-		const FRotator NewRotation = FMath::RInterpConstantTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
+		FRotator NewRotation = FMath::RInterpConstantTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed); NewRotation.Pitch = 0.0f;
 		FlipbookComponent->SetWorldRotation(NewRotation);
 	}
 }
