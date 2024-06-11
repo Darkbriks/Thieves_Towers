@@ -1,27 +1,24 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Obstacle.h"
+#include "Components/WidgetComponent.h"
 
-// Sets default values
+#include "Kismet/KismetMathLibrary.h"
+
 AObstacle::AObstacle()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	RootComponent = MeshComponent;
+
+	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
+	WidgetComponent->SetupAttachment(RootComponent);
 }
 
-// Called when the game starts or when spawned
-void AObstacle::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
 void AObstacle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FVector TargetLocation = GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetCameraLocation();
+	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(WidgetComponent->GetComponentLocation(), TargetLocation);
+	WidgetComponent->SetWorldRotation(TargetRotation);
 }
-
