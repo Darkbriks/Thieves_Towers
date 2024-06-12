@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "MapManager.generated.h"
 
+class APostProcessVolume;
 class AWaveGenerator;
 class ACard;
 
@@ -61,6 +62,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MapManager - Round")
 	int Life = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager")
+	APostProcessVolume* PostProcessVolume;
 
 	// Methods
 	virtual void BeginPlay() override;
@@ -128,6 +132,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetCardDiscardSize() { return CardDiscard.Num(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	APostProcessVolume* GetPostProcessVolume() { return PostProcessVolume; }
 
 	// Setters
 	void AddMana(int ManaAmount) { Mana += ManaAmount; }

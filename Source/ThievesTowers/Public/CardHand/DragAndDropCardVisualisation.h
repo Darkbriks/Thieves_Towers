@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "DragAndDropCardVisualisation.generated.h"
 
+class USphereComponent;
 class ATower;
 class UStaticMeshComponent;
 
@@ -12,24 +13,30 @@ class THIEVESTOWERS_API ADragAndDropCardVisualisation : public AActor
 {
 	GENERATED_BODY()
 
-	bool bCanSpawn = false;
-	
-public:	
-	ADragAndDropCardVisualisation();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* Root;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
-    TSubclassOf<ATower> TowerToSpawn;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USphereComponent* Sphere;
 
-protected:
-	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ATower> TowerToSpawn;
 
-public:	
+	bool bCanSpawn = false;
+	TArray<AActor*> OverlappingObstacles;
+
+public:
+	ADragAndDropCardVisualisation();
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
 	virtual void Tick(float DeltaTime) override;
 	virtual bool ApplyVisualisation();
 	virtual void SuppressVisualisation();

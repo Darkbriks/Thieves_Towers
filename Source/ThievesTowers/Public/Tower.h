@@ -9,6 +9,7 @@ class UCapsuleComponent;
 class AProjectile;
 class UPaperFlipbook;
 class UPaperFlipbookComponent;
+class USphereComponent;
 
 UCLASS()
 class THIEVESTOWERS_API ATower : public AActor
@@ -29,6 +30,9 @@ class THIEVESTOWERS_API ATower : public AActor
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
 	UCapsuleComponent* CapsuleComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
+	USphereComponent* SphereComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbookComponent* FlipbookComponent;

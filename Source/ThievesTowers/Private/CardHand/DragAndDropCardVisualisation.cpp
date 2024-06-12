@@ -2,6 +2,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/SphereComponent.h"
 #include "Tower.h"
 
 ADragAndDropCardVisualisation::ADragAndDropCardVisualisation()
@@ -14,16 +15,38 @@ ADragAndDropCardVisualisation::ADragAndDropCardVisualisation()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+
+	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
+	Sphere->SetupAttachment(Root);
+	Sphere->SetSphereRadius(100.0f);
+	Sphere->SetCollisionProfileName("OverlapAllDynamic");
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ADragAndDropCardVisualisation::OnOverlapBegin);
+	Sphere->OnComponentEndOverlap.AddDynamic(this, &ADragAndDropCardVisualisation::OnOverlapEnd);
+
+	OverlappingObstacles = TArray<AActor*>();
 }
 
-void ADragAndDropCardVisualisation::BeginPlay()
+void ADragAndDropCardVisualisation::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::BeginPlay();
+	if (OtherActor->ActorHasTag("Obstacle") || OtherComp->ComponentHasTag("Tower-Basement"))
+	{
+		OverlappingObstacles.Add(OtherActor);
+	}
+}
+
+void ADragAndDropCardVisualisation::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor->ActorHasTag("Obstacle") || OtherComp->ComponentHasTag("Tower-Basement"))
+	{
+		OverlappingObstacles.Remove(OtherActor);
+	}
 }
 
 void ADragAndDropCardVisualisation::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	bCanSpawn = false;
 
 	FVector WorldPosition;
 	FVector WorldDirection;
@@ -36,16 +59,18 @@ void ADragAndDropCardVisualisation::Tick(float DeltaTime)
 		// On cherche le premier objet qui possède le tag "floor"
 		for (FHitResult HitResult : HitResults)
 		{
-			if (HitResult.GetActor()->ActorHasTag("Floor") && HitResult.Normal.Z >= 0.9f)
+			SetActorLocation(HitResult.ImpactPoint);
+			if (OverlappingObstacles.Num() == 0 && HitResult.GetActor()->ActorHasTag("Floor") && HitResult.Normal.Z >= 0.9f)
 			{
+				Mesh->SetRenderCustomDepth(false);
 				bCanSpawn = true;
-				SetActorLocation(HitResult.ImpactPoint);
 				return;
 			}
 		}
+		Mesh->SetRenderCustomDepth(true);
+		return;
 	}
-	bCanSpawn = false;
-	this->SetActorLocation(FVector(0.0f, 0.0f, -500.0f));
+	this->SetActorLocation(WorldPosition + WorldDirection * 1000.0f);
 }
 
 bool ADragAndDropCardVisualisation::ApplyVisualisation()

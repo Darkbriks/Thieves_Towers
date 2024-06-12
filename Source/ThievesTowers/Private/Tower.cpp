@@ -1,13 +1,11 @@
 #include "Tower.h"
-
 #include "GA_ThievesTowers.h"
-
 #include "Enemy/Enemy.h"
 #include "Projectile.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
-
+#include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,6 +32,13 @@ ATower::ATower()
 	BasementMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BasementMesh"));
 	BasementMesh->SetupAttachment(RootComponent);
 	BasementMesh->SetGenerateOverlapEvents(false);
+	
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
+	SphereComponent->SetupAttachment(RootComponent);
+	SphereComponent->SetSphereRadius(100.0f);
+	SphereComponent->SetCollisionProfileName("OverlapAllDynamic");
+	SphereComponent->SetGenerateOverlapEvents(true);
+	SphereComponent->ComponentTags.Add("Tower-Basement");
 }
 
 //////////////////////////////////////////////////////////////////////////
