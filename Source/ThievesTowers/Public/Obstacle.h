@@ -28,4 +28,7 @@ public:
 	AObstacle();
 
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Obstacle - Methods")
+	void DestroyObstacle();
 };
