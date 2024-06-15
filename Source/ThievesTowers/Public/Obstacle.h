@@ -10,11 +10,14 @@ UCLASS()
 class THIEVESTOWERS_API AObstacle : public AActor
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Obstacle - Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* Root;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Obstacle - Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Obstacle - Components", meta = (AllowPrivateAccess = "true"))
     UStaticMeshComponent* MeshComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Obstacle - Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Obstacle - Components", meta = (AllowPrivateAccess = "true"))
 	UWidgetComponent* WidgetComponent;
 
 protected:
