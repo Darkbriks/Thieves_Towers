@@ -130,7 +130,10 @@ void ATower::BeginPlay()
 void ATower::Destroyed()
 {
 	Super::Destroyed();
-	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->RemoveTower(this); }
+	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+	{
+		GameInstance->RemoveTower(this);
+	}
 }
 
 
