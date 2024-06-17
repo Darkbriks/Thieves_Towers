@@ -46,7 +46,7 @@ void AProjectile::MoveTowardsTarget(float DeltaTime)
 
 void AProjectile::Impact()
 {
-	if (!TargetEnemy) { return; }
+	if (TargetEnemy == nullptr) { Destroy(); return; }
 	TargetEnemy->TakeDamage(Damage, TypesOfDamage, FDamageEvent(), nullptr, this);
 	for (TSubclassOf<UProjectileEffect> Effect : Effects)
 	{
