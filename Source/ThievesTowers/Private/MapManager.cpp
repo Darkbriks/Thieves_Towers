@@ -6,6 +6,8 @@
 #include "Engine/World.h"
 #include "EngineUtils.h"
 
+#include "CardEffect/CardEffect.h"
+
 #include "CardHand/CardHandWidget.h"
 #include "CardHand/DragAndDropCardVisualisation.h"
 
@@ -74,13 +76,13 @@ void AMapManager::PopulateDeck()
 	for (int i = 0; i < CardDeck.Num(); i++) { int RandomIndex = FMath::RandRange(0, CardDeck.Num() - 1); FCardInfo Temp = CardDeck[i]; CardDeck[i] = CardDeck[RandomIndex]; CardDeck[RandomIndex] = Temp; }
 }
 
-void AMapManager::CardPlayed(int CardIndex, ADragAndDropCardVisualisation* DragAndDropCardVisualisation)
+void AMapManager::CardPlayed(int CardIndex, ACardEffect* CardEffect)
 {
-	if (CardIndex < 0 || CardIndex >= Hand.Num()) { DragAndDropCardVisualisation->SuppressVisualisation(); return; }
+	if (CardIndex < 0 || CardIndex >= Hand.Num()) { CardEffect->CancelEffect(); return; }
 	FCardInfo Card = Hand[CardIndex];
 
-	if (Mana < Card.GetManaCost() || Gold < Card.GetGoldCost()) { DragAndDropCardVisualisation->SuppressVisualisation(); return; }
-	if (!DragAndDropCardVisualisation->ApplyVisualisation()) { return; }
+	if (Mana < Card.GetManaCost() || Gold < Card.GetGoldCost()) { CardEffect->CancelEffect(); return; }
+	if (!CardEffect->ApplyEffect()) { return; }
 	RemoveCardFromHand(CardIndex);
 	Mana -= Card.GetManaCost();
 	Gold -= Card.GetGoldCost();

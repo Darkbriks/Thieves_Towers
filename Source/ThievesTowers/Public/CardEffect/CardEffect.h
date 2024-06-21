@@ -1,21 +1,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "CardEffect.generated.h"
 
 UCLASS(Blueprintable)
-class THIEVESTOWERS_API UCardEffect : public UObject
+class THIEVESTOWERS_API ACardEffect : public AActor
 {
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Effect")
-	FName EffectName;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* Root;
+	
+	bool bCanApplyEffect = false;
 	
 public:
-	virtual void ApplyEffect()
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Applying effect %s"), *EffectName.ToString());
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Applying effect %s"), *EffectName.ToString()));
-	}
+	ACardEffect();
+
+	virtual bool ApplyEffect();
+	virtual void CancelEffect();
 };
