@@ -2,27 +2,35 @@
 
 #include "CoreMinimal.h"
 #include "CardHandInterface.h"
-
 #include "Blueprint/UserWidget.h"
 #include "CardHandWidget.generated.h"
 
-class ADragAndDropCardVisualisation;
+class ACardEffect;
 struct FCardInfo;
 class UOverlay;
 class UCardWidget;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCardPlayed, int, CardIndex, ADragAndDropCardVisualisation*, DragAndDropCardVisualisation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCardPlayed, int, CardIndex, ACardEffect*, CardEffect);
 
 UCLASS(Blueprintable)
 class THIEVESTOWERS_API UCardHandWidget : public UUserWidget, public ICardHandInterface
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	TArray<UCardWidget*> CardWidgets;
+
+	UPROPERTY()
 	int HoveredCardIndex = -1;
+
+	UPROPERTY()
 	UCardWidget* DraggedCardReferance = nullptr;
+
+	UPROPERTY()
 	UCardWidget* DragHoveredCard = nullptr;
-	ADragAndDropCardVisualisation* DragAndDropCardVisualisation = nullptr;
+
+	UPROPERTY()
+	ACardEffect* CardEffect = nullptr;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -45,9 +53,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
 	UDataTable* CardDataTable;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
-	TSubclassOf<ADragAndDropCardVisualisation> DragAndDropCardVisualisationClass;
 
 	virtual void NativeConstruct() override;
 

@@ -1,7 +1,8 @@
 #include "CardHand/CardHandWidget.h"
+#include "CardHand/CardWidget.h"
+#include "CardEffect/CardEffect.h"
 #include "GA_ThievesTowers.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "CardHand/CardWidget.h"
 #include "CardHand/DragAndDropCardVisualisation.h"
 #include "Components/Overlay.h"
 #include "Kismet/GameplayStatics.h"
@@ -93,14 +94,15 @@ void UCardHandWidget::OnCardDragged(UCardWidget* DraggedCard)
 	if (CardHandOverlay == nullptr) { return; }
 	this->DraggedCardReferance = DraggedCard;
 
-	DragAndDropCardVisualisation = GetWorld()->SpawnActor<ADragAndDropCardVisualisation>(DragAndDropCardVisualisationClass);
+	FCardInfo CardInfo = DraggedCard->GetCardInfo();
+	CardEffect = GetWorld()->SpawnActor<ACardEffect>(CardInfo.GetEffect());
 }
 
 void UCardHandWidget::OnCardDragCancelled(UCardWidget* CancelDraggedCard, bool bDragIsCancelled)
 {
-	if (CardHandOverlay == nullptr || bDragIsCancelled) { DragAndDropCardVisualisation->SuppressVisualisation(); return; }
+	if (CardHandOverlay == nullptr || bDragIsCancelled) { CardEffect->CancelEffect(); return; }
 	if (DraggedCardReferance == CancelDraggedCard) { DraggedCardReferance = nullptr; }
-	OnCardPlayed.Broadcast(CardWidgets.Find(CancelDraggedCard), DragAndDropCardVisualisation);
+	OnCardPlayed.Broadcast(CardWidgets.Find(CancelDraggedCard), CardEffect);
 }
 
 void UCardHandWidget::OnCardDragEnter(UCardWidget* HoveredCard)

@@ -5,7 +5,7 @@
 #include "Enum/CardType.h"
 #include "CardInfo.generated.h"
 
-class UCardEffect;
+class ACardEffect;
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FCardInfo : public FTableRowBase
@@ -35,7 +35,7 @@ protected:
 	int GoldCost;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
-	TArray<TSubclassOf<UCardEffect>> Effects;
+	TSubclassOf<ACardEffect> Effect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
 	TArray<FName> Tags;
@@ -53,7 +53,7 @@ public:
 		Tags = TArray<FName>();
 	}
 
-	FCardInfo(FName NewCardName, FText NewDescription, UTexture2D* NewCardTexture, TEnumAsByte<ERarity> NewRarity, TEnumAsByte<ECardType> NewCardType, int NewManaCost, int NewGoldCost, TArray<TSubclassOf<UCardEffect>> NewEffects, TArray<FName> NewTags)
+	FCardInfo(FName NewCardName, FText NewDescription, UTexture2D* NewCardTexture, TEnumAsByte<ERarity> NewRarity, TEnumAsByte<ECardType> NewCardType, int NewManaCost, int NewGoldCost, TSubclassOf<ACardEffect> NewEffect, TArray<FName> NewTags)
 	{
 		CardName = NewCardName;
 		Description = NewDescription;
@@ -62,7 +62,7 @@ public:
 		CardType = NewCardType;
 		ManaCost = NewManaCost;
 		GoldCost = NewGoldCost;
-		Effects = NewEffects;
+		Effect = NewEffect;
 		Tags = NewTags;
 	}
 
@@ -74,6 +74,6 @@ public:
 	TEnumAsByte<ECardType> GetCardType() { return CardType; }
 	int GetManaCost() { return ManaCost; }
 	int GetGoldCost() { return GoldCost; }
-	TArray<TSubclassOf<UCardEffect>> GetEffects() { return Effects; }
+	TSubclassOf<ACardEffect> GetEffect() { return Effect; }
 	TArray<FName> GetTags() { return Tags; }
 };
