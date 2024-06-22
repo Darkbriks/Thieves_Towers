@@ -2,10 +2,7 @@
 #include "CardHand/CardWidget.h"
 #include "CardEffect/CardEffect.h"
 #include "GA_ThievesTowers.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
-#include "CardHand/DragAndDropCardVisualisation.h"
 #include "Components/Overlay.h"
-#include "Kismet/GameplayStatics.h"
 
 void UCardHandWidget::NativeConstruct()
 {

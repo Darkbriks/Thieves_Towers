@@ -1,15 +1,11 @@
 #include "MapManager.h"
 #include "Struct/CardInfo.h"
-#include "CardHand/Card.h"
 #include "GA_ThievesTowers.h"
 #include "WaveGenerator.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
-
 #include "CardEffect/CardEffect.h"
-
 #include "CardHand/CardHandWidget.h"
-#include "CardHand/DragAndDropCardVisualisation.h"
 
 AMapManager::AMapManager()
 {
