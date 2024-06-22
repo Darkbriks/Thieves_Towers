@@ -69,8 +69,6 @@ bool ASpellEffect::ApplyEffect()
 	if (bCanApplyEffect)
 	{
 		// TODO: Add particle system
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ASpellEffect::ApplyEffect() called"));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Enemies hit: " + FString::FromInt(Enemies.Num())));
 		for (AEnemy* Enemy : Enemies)
 		{
 			Enemy->TakeDamage(Damage, TypesOfDamage, FDamageEvent(), GetInstigatorController(), this);

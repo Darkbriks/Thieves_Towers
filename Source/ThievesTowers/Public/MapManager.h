@@ -159,6 +159,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EndMap();
 
+	UFUNCTION(BlueprintCallable)
+	void DrawCards(int NumberOfCards = 1);
 
 	AMapManager();
 };

@@ -152,3 +152,15 @@ void AMapManager::EndMap()
 	UE_LOG(LogTemp, Warning, TEXT("EndMap"));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Map is ending")));
 }
+
+void AMapManager::DrawCards(int NumberOfCards)
+{
+	for (int i = 0; i < NumberOfCards; i++)
+	{
+		if (Hand.Num() >= MaxHandSize + 1) { return; }
+		if (CardDeck.Num() == 0) { PopulateDeck(); }
+		Hand.Add(CardDeck[0]);
+		OnAddCardToHand.Broadcast(CardDeck[0]);
+		RemoveCardFromDeck(0);
+	}
+}
