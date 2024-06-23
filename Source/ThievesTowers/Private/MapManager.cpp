@@ -153,6 +153,12 @@ void AMapManager::EndMap()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Map is ending")));
 }
 
+void AMapManager::CheckEndRound()
+{
+	if (CurrentRoundWaves.Num() == 0) { EndRound(); }
+}
+
+
 void AMapManager::DrawCards(int NumberOfCards)
 {
 	for (int i = 0; i < NumberOfCards; i++)

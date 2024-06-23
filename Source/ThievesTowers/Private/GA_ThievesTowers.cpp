@@ -60,4 +60,4 @@ int UGA_ThievesTowers::GetNumberEnemiesOfTypeInRange(TSubclassOf<AEnemy> EnemyCl
 void UGA_ThievesTowers::AddTower(ATower* Tower) { Towers.Add(Tower); }
 void UGA_ThievesTowers::RemoveTower(ATower* Tower) { Towers.Remove(Tower); }
 void UGA_ThievesTowers::AddEnemy(AEnemy* Enemy) { Enemies.Add(Enemy); }
-void UGA_ThievesTowers::RemoveEnemy(AEnemy* Enemy) { Enemies.Remove(Enemy); }
+void UGA_ThievesTowers::RemoveEnemy(AEnemy* Enemy) { Enemies.Remove(Enemy); if (Enemies.Num() == 0) { GetMapManager()->CheckEndRound(); } }

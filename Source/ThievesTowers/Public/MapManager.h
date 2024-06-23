@@ -141,7 +141,7 @@ public:
 	void AddGold(int GoldAmount) { Gold += GoldAmount; }
 	void AddLife(int LifeAmount) { Life += LifeAmount; }
 	
-	void RemoveWave(AWaveGenerator* Wave) { CurrentRoundWaves.Remove(Wave); if (CurrentRoundWaves.Num() == 0) { EndRound(); } }
+	void RemoveWave(AWaveGenerator* Wave) { CurrentRoundWaves.Remove(Wave); /*if (CurrentRoundWaves.Num() == 0) { EndRound(); }*/ }
 
 	// Methods
 	UFUNCTION(BlueprintCallable)
@@ -158,6 +158,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EndMap();
+
+	UFUNCTION(BlueprintCallable)
+	void CheckEndRound();
 
 	UFUNCTION(BlueprintCallable)
 	void DrawCards(int NumberOfCards = 1);
