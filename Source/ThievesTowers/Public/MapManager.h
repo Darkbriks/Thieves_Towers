@@ -27,6 +27,9 @@ class THIEVESTOWERS_API AMapManager : public AActor
 	const int StartingLife = 100;
 	const int ClearRoundGold = 200;
 
+	int BonusGold = 0;
+	int BonusMana = 0;
+
 	TArray<AWaveGenerator*> CurrentRoundWaves;
 
 protected:
@@ -140,8 +143,10 @@ public:
 	void AddMana(int ManaAmount) { Mana += ManaAmount; }
 	void AddGold(int GoldAmount) { Gold += GoldAmount; }
 	void AddLife(int LifeAmount) { Life += LifeAmount; }
+	void AddBonusGold(int BonusGoldAmount) { BonusGold += BonusGoldAmount; }
+	void AddBonusMana(int BonusManaAmount) { BonusMana += BonusManaAmount; }
 	
-	void RemoveWave(AWaveGenerator* Wave) { CurrentRoundWaves.Remove(Wave); /*if (CurrentRoundWaves.Num() == 0) { EndRound(); }*/ }
+	void RemoveWave(AWaveGenerator* Wave) { CurrentRoundWaves.Remove(Wave); }
 
 	// Methods
 	UFUNCTION(BlueprintCallable)

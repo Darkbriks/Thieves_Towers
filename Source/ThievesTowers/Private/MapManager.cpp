@@ -113,8 +113,9 @@ void AMapManager::InitRound(bool bIsFirstRound)
 	
 	if (!bIsFirstRound)
 	{
-		Gold += ClearRoundGold;
-		Mana = StartingMana;
+		Gold += ClearRoundGold + BonusGold;
+		Mana = StartingMana + BonusMana;
+		BonusGold = 0; BonusMana = 0;
 	}
 
 	CurrentRoundWaves.Empty();
