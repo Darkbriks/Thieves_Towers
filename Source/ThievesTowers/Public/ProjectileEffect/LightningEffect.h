@@ -8,14 +8,9 @@
 class AEnemy;
 
 UCLASS(Blueprintable)
-class THIEVESTOWERS_API ULightningEffect : public UProjectileEffect, public FTickableGameObject
+class THIEVESTOWERS_API ULightningEffect : public UProjectileEffect
 {
 	GENERATED_BODY()
-
-	int CurrentTargets = 0;
-	float LightningTime = 0.0f;
-	TArray<AEnemy*> Enemies;
-	bool bIsFinished = true;
     
 protected:
 
@@ -31,7 +26,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect")
 	TArray<TEnumAsByte<ETypeOfDamage>> TypeOfDamage = {ETypeOfDamage::Magical};
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect") //de9e41
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect")
 	FColor LightningColor = FColor(222, 158, 65, 255);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect")
@@ -39,13 +34,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect")
 	float TimeBetweenTargets = 0.2f;
-
-	void InitializeEffect();
     
 public:
 	virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy) override;
-
-	virtual void Tick(float DeltaTime) override;
-	virtual bool IsTickable() const override { return true; }
-	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(ULightningEffect, STATGROUP_Tickables); }
 };
