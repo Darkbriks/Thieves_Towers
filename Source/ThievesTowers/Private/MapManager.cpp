@@ -1,5 +1,6 @@
 #include "MapManager.h"
 #include "Struct/CardInfo.h"
+#include "Enum/CardType.h"
 #include "GA_ThievesTowers.h"
 #include "WaveGenerator.h"
 #include "Engine/World.h"
@@ -35,6 +36,22 @@ FCardInfo AMapManager::GetRandomCard()
 	FCardInfo* CardInfo = CardDataTable->FindRow<FCardInfo>(RandomRowName, "");
 	return CardInfo == nullptr ? FCardInfo() : *CardInfo;
 }
+
+FCardInfo AMapManager::GetRandomCardOfType(ECardType CardType)
+{
+	if (CardDataTable == nullptr) { return FCardInfo(); }
+	TArray<FName> RowNames = CardDataTable->GetRowNames();
+	if (RowNames.Num() == 0) { return FCardInfo(); }
+	TArray<FCardInfo> CardsOfType;
+	for (FName RowName : RowNames)
+	{
+		FCardInfo* CardInfo = CardDataTable->FindRow<FCardInfo>(RowName, "");
+		if (CardInfo != nullptr && CardInfo->GetCardType() == CardType) { CardsOfType.Add(*CardInfo); }
+	}
+	if (CardsOfType.Num() == 0) { return FCardInfo(); }
+	return CardsOfType[FMath::RandRange(0, CardsOfType.Num() - 1)];
+}
+
 
 void AMapManager::AddCardToHand(FCardInfo Card)
 {
@@ -96,10 +113,9 @@ void AMapManager::InitMap()
 	Gold = StartingGold;
 	Life = StartingLife;
 
-	for (int i = 0; i < DeckSize; i++) { AddCardToDeck(GetRandomCard()); }
+	AddCardToDeck(GetRandomCardOfType(ECardType::TOWER));
+	for (int i = 0; i < DeckSize - 1; i++) { AddCardToDeck(GetRandomCard()); }
 	PopulateHand();
-	//for (int i = 0; i < MaxHandSize; i++) { AddCardToHand(CardDeck[0]); RemoveCardFromDeck(0); }
-	//if (FMath::RandBool()) { CardDiscard.Add(Hand[0]); RemoveCardFromHand(0); AddCardToHand(CardDeck[0]); CardDeck.RemoveAt(0); }
 
 	InitRound(true);
 }

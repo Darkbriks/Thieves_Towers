@@ -62,11 +62,6 @@ void ALightningHeader::Tick(float DeltaTime)
 		Location = TargetEnemy->GetActorLocation();
 		AffectedEnemies.Add(TargetEnemy);
 		
-		if (CurrentTargets >= NumberOfTargets)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Destroying Lightning"));
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Destroying Lightning"));
-			Destroy();
-		}
+		if (CurrentTargets >= NumberOfTargets) { Destroy(); }
 	}
 }

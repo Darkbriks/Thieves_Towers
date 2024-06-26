@@ -1,10 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "CardHand/CardHandWidget.h"
-
 #include "Struct/CardInfo.h"
+#include "Enum/CardType.h"
 #include "GameFramework/Actor.h"
 #include "MapManager.generated.h"
 
@@ -73,6 +72,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	FCardInfo GetRandomCard();
+	FCardInfo GetRandomCardOfType(ECardType CardType);
 	void AddCardToHand(FCardInfo Card);
 	void RemoveCardFromHand(int CardIndex);
 	void AddCardToDeck(FCardInfo Card);
