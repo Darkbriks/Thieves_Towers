@@ -1,11 +1,12 @@
 #include "CardEffect/SpellEffect.h"
+#include "GA_ThievesTowers.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Enemy/Enemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Particles/ParticleSystem.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
 
 ASpellEffect::ASpellEffect()
@@ -16,24 +17,6 @@ ASpellEffect::ASpellEffect()
 	Mesh->SetupAttachment(Root);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetMobility(EComponentMobility::Movable);
-
-	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Sphere"));
-	Capsule->SetupAttachment(Root);
-	Capsule->SetCapsuleSize(100.0f, 100.0f);
-	Capsule->SetCollisionProfileName("OverlapAllDynamic");
-	Capsule->OnComponentBeginOverlap.AddDynamic(this, &ASpellEffect::OnOverlapBegin);
-	Capsule->OnComponentEndOverlap.AddDynamic(this, &ASpellEffect::OnOverlapEnd);
-	Capsule->SetMobility(EComponentMobility::Movable);
-}
-
-void ASpellEffect::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (AEnemy* Enemy = Cast<AEnemy>(OtherActor)) { OverlappingEnemies.Add(Enemy); }
-}
-
-void ASpellEffect::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (AEnemy* Enemy = Cast<AEnemy>(OtherActor)) { OverlappingEnemies.Remove(Enemy); }
 }
 
 void ASpellEffect::Tick(float DeltaTime)
@@ -64,16 +47,37 @@ void ASpellEffect::Tick(float DeltaTime)
 
 bool ASpellEffect::ApplyEffect()
 {
-	const TArray<AEnemy*> Enemies = OverlappingEnemies;
-	
-	if (bCanApplyEffect)
+	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{
-		// TODO: Add particle system
-		for (AEnemy* Enemy : Enemies)
+		if (bCanApplyEffect)
 		{
-			Enemy->TakeDamage(Damage, TypesOfDamage, FDamageEvent(), GetInstigatorController(), this);
+			if (ParticleSystem != nullptr)
+			{
+				UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ParticleSystem, GetActorLocation() + ParticleSystemTransform.GetLocation(), ParticleSystemTransform.GetRotation().Rotator(), ParticleSystemTransform.GetScale3D());
+				if (NiagaraComponent != nullptr) { NiagaraComponent->Activate(); }
+			}
+
+			FVector Location = GetActorLocation();
+			float EffectRange = Range;
+			float EffectDamage = Damage;
+			TArray<TEnumAsByte<ETypeOfDamage>> EffectTypesOfDamage = TypesOfDamage;
+
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [GameInstance, Location, EffectRange, EffectDamage, EffectTypesOfDamage]()
+			{
+				const TArray<AEnemy*> Enemies = GameInstance->GetEnemies();
+				for (AEnemy* Enemy : Enemies)
+				{
+					if (Enemy->GetActorLocation().Equals(Location, EffectRange))
+					{
+						Enemy->TakeDamage(EffectDamage, EffectTypesOfDamage, FDamageEvent(), nullptr, nullptr);
+					}
+				}
+			}, TimeBeforeDamage, false);
+			Destroy();
+			return true;
 		}
-		Destroy(); return true;
 	}
+	Destroy();
 	return false;
 }

@@ -6,6 +6,7 @@
 
 class UCapsuleComponent;
 class AEnemy;
+class UNiagaraSystem;
 enum ETypeOfDamage : int;
 
 UCLASS()
@@ -17,9 +18,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UCapsuleComponent* Capsule;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
+	float Range = 500.0f;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	int Damage = 1;
 
@@ -27,20 +28,17 @@ protected:
 	TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UParticleSystem> ParticleSystem;
+	UNiagaraSystem* ParticleSystem;
 
-	UPROPERTY()
-	TArray<AEnemy*> OverlappingEnemies;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
+	FTransform ParticleSystemTransform;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
+	float TimeBeforeDamage = 1.0f;
 
 public:
 	ASpellEffect();
-
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
+	
 	virtual void Tick(float DeltaTime) override;
 	virtual bool ApplyEffect() override;
 };
