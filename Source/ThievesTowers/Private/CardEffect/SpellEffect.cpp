@@ -1,13 +1,11 @@
 #include "CardEffect/SpellEffect.h"
 #include "GA_ThievesTowers.h"
-#include "Components/StaticMeshComponent.h"
-#include "Enemy/Enemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "Engine/DamageEvents.h"
+#include "ProjectileEffect/ProjectileEffect.h"
 
 ASpellEffect::ASpellEffect()
 {
@@ -58,21 +56,12 @@ bool ASpellEffect::ApplyEffect()
 			}
 
 			FVector Location = GetActorLocation();
-			float EffectRange = Range;
-			float EffectDamage = Damage;
-			TArray<TEnumAsByte<ETypeOfDamage>> EffectTypesOfDamage = TypesOfDamage;
-
+			TSubclassOf<UProjectileEffect> SpellEffect = Effect;
 			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [GameInstance, Location, EffectRange, EffectDamage, EffectTypesOfDamage]()
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [GameInstance, SpellEffect, Location]()
 			{
-				const TArray<AEnemy*> Enemies = GameInstance->GetEnemies();
-				for (AEnemy* Enemy : Enemies)
-				{
-					if (Enemy->GetActorLocation().Equals(Location, EffectRange))
-					{
-						Enemy->TakeDamage(EffectDamage, EffectTypesOfDamage, FDamageEvent(), nullptr, nullptr);
-					}
-				}
+				UProjectileEffect* Effect = GameInstance->GetProjectileEffect(SpellEffect);
+				if (Effect != nullptr) { Effect->ApplyEffect(FTransform(Location), nullptr); }
 			}, TimeBeforeDamage, false);
 			Destroy();
 			return true;

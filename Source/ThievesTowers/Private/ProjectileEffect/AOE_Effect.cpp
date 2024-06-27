@@ -1,6 +1,7 @@
 #include "ProjectileEffect/AOE_Effect.h"
 #include "GA_ThievesTowers.h"
 #include "Enemy/Enemy.h"
+#include "Struct/AreaDamage.h"
 #include "Engine/DamageEvents.h"
 
 void UAOE_Effect::ApplyEffect(FTransform Transform, AEnemy* TargetEnemy)
@@ -11,7 +12,7 @@ void UAOE_Effect::ApplyEffect(FTransform Transform, AEnemy* TargetEnemy)
 		for (AEnemy* Enemy : Enemies)
 		{
 			float Distance = FVector::Dist(Enemy->GetActorLocation(), Transform.GetLocation());
-			for (FAOE_Params Params : AOE_Params)
+			for (FAreaDamage Params : AOE_Params)
 			{
 				if (Distance <= Params.Radius)
 				{

@@ -4,6 +4,7 @@
 #include "CardEffect/CardEffect.h"
 #include "SpellEffect.generated.h"
 
+class UProjectileEffect;
 class UCapsuleComponent;
 class AEnemy;
 class UNiagaraSystem;
@@ -19,13 +20,7 @@ protected:
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	float Range = 500.0f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	int Damage = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage;
+	TSubclassOf<UProjectileEffect> Effect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	UNiagaraSystem* ParticleSystem;
