@@ -4,7 +4,6 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
-enum ETypeOfDamage : int;
 class UPaperSpriteComponent;
 class UProjectileEffect;
 class UArrowComponent;
@@ -17,6 +16,8 @@ class THIEVESTOWERS_API AProjectile : public AActor
 
 	FVector InitialPosition;
 	FVector TargetPosition;
+
+	UPROPERTY()
 	AEnemy* TargetEnemy = nullptr;
 
 	bool bIsInitialized = false;
@@ -36,13 +37,7 @@ protected:
 	float Speed = 1000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
-	int Damage = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
 	bool bLockOnTarget = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
-	TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
 	TArray<TSubclassOf<UProjectileEffect>> Effects;

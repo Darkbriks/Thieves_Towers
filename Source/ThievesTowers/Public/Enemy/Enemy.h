@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Enum/TypeOfDamage.h"
+#include "Enum/EnemyType.h"
 #include "Enemy.generated.h"
 
-enum EEnemyType : int;
-enum ETypeOfDamage : int;
 class UPaperSpriteComponent;
 class AProjectile;
 class APath;

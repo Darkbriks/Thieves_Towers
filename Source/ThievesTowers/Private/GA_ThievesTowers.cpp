@@ -1,6 +1,6 @@
 #include "GA_ThievesTowers.h"
 #include "ProjectileEffect/ProjectileEffect.h"
-#include "Tower.h"
+#include "Towers/Tower.h"
 #include "Enemy/Little/Enemy_Silly.h"
 
 //////////////////////////////////////////////////////////////////////////

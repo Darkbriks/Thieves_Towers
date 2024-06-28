@@ -4,7 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Tower.h"
+#include "Towers/Tower.h"
 
 ASpawnTowerEffect::ASpawnTowerEffect()
 {

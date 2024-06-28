@@ -1,4 +1,4 @@
-#include "Tower.h"
+#include "Towers/Tower.h"
 #include "GA_ThievesTowers.h"
 #include "Enemy/Enemy.h"
 #include "Projectile.h"

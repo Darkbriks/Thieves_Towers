@@ -8,7 +8,6 @@ class UProjectileEffect;
 class UCapsuleComponent;
 class AEnemy;
 class UNiagaraSystem;
-enum ETypeOfDamage : int;
 
 UCLASS()
 class THIEVESTOWERS_API ASpellEffect : public ACardEffect
