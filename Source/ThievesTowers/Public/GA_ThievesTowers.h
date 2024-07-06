@@ -1,14 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TD_Player.h"
 #include "MapManager.h"
 #include "Engine/GameInstance.h"
 #include "GA_ThievesTowers.generated.h"
 
 class AEnemy_Silly;
 class AEnemy;
-class ATower;
+class APrimitiveTower;
 class UProjectileEffect;
 
 UCLASS()
@@ -20,7 +19,7 @@ class THIEVESTOWERS_API UGA_ThievesTowers : public UGameInstance, public FTickab
 	AMapManager* MapManager;
 
 	TArray<UProjectileEffect*> ProjectileEffects;
-	TArray<ATower*> Towers;
+	TArray<APrimitiveTower*> Towers;
 	TArray<AEnemy*> Enemies;
 
 public:
@@ -45,8 +44,8 @@ public:
 	int GetNumberEnemiesOfTypeInRange(TSubclassOf<AEnemy> EnemyClass, FVector Location, float Range);
 
 	UFUNCTION(BlueprintCallable)
-	void AddTower(ATower* Tower);
-	void RemoveTower(ATower* Tower);
+	void AddTower(APrimitiveTower* Tower);
+	void RemoveTower(APrimitiveTower* Tower);
 	void AddEnemy(AEnemy* Enemy);
 	void RemoveEnemy(AEnemy* Enemy);
 };

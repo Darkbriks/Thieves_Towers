@@ -100,8 +100,15 @@ void AEnemy::Heal(int HealAmount)
 
 void AEnemy::TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	for (TEnumAsByte<ETypeOfDamage> TypeOfDamage : TypesOfDamage) { if (Resistances.Contains(TypeOfDamage)) { return; } }
-	TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	for (TEnumAsByte<ETypeOfDamage> TypeOfDamage : TypesOfDamage)
+	{
+		if (!Resistances.Contains(TypeOfDamage))
+		{
+			TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+			return;
+		}
+	}
+	
 }
 
 void AEnemy::Freeze(float FreezeTime, FColor FreezeColor, int NewDamageAfterFreeze, TArray<TEnumAsByte<ETypeOfDamage>> NewTypesOfDamage)

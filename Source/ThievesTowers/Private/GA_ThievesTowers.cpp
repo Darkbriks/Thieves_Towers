@@ -1,6 +1,6 @@
 #include "GA_ThievesTowers.h"
 #include "ProjectileEffect/ProjectileEffect.h"
-#include "Towers/Tower.h"
+#include "Towers/PrimitiveTower.h"
 #include "Enemy/Little/Enemy_Silly.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////////////////
 void UGA_ThievesTowers::Tick(float DeltaTime)
 {
-	TArray<ATower*> TowersToDesactivate;
+	TArray<APrimitiveTower*> TowersToDesactivate;
 	for (AEnemy* Enemy : Enemies)
 	{
 		if (AEnemy_Silly* SillyEnemy = Cast<AEnemy_Silly>(Enemy))
 		{
-			for (ATower* Tower : Towers)
+			for (APrimitiveTower* Tower : Towers)
 			{
 				if (FVector::Dist(SillyEnemy->GetActorLocation(), Tower->GetActorLocation()) <= SillyEnemy->GetRange())
 				{
@@ -23,7 +23,7 @@ void UGA_ThievesTowers::Tick(float DeltaTime)
 		}
 	}
 
-	for (ATower* Tower : Towers)
+	for (APrimitiveTower* Tower : Towers)
 	{
 		if (TowersToDesactivate.Contains(Tower)) { Tower->Deactivate(); }
 		else { Tower->Activate(); }
@@ -57,7 +57,7 @@ int UGA_ThievesTowers::GetNumberEnemiesOfTypeInRange(TSubclassOf<AEnemy> EnemyCl
 	return NumberEnemies;
 }
 
-void UGA_ThievesTowers::AddTower(ATower* Tower) { Towers.Add(Tower); }
-void UGA_ThievesTowers::RemoveTower(ATower* Tower) { Towers.Remove(Tower); }
+void UGA_ThievesTowers::AddTower(APrimitiveTower* Tower) { Towers.Add(Tower); }
+void UGA_ThievesTowers::RemoveTower(APrimitiveTower* Tower) { Towers.Remove(Tower); }
 void UGA_ThievesTowers::AddEnemy(AEnemy* Enemy) { Enemies.Add(Enemy); }
 void UGA_ThievesTowers::RemoveEnemy(AEnemy* Enemy) { Enemies.Remove(Enemy); if (Enemies.Num() == 0) { GetMapManager()->CheckEndRound(); } }

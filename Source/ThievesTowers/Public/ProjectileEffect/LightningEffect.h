@@ -24,7 +24,7 @@ protected:
 	int NumberOfTargets = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect")
-	TArray<TEnumAsByte<ETypeOfDamage>> TypeOfDamage = {ETypeOfDamage::Magical};
+	TArray<TEnumAsByte<ETypeOfDamage>> DamageTypes = {ETypeOfDamage::Magical};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lightning Effect")
 	FColor LightningColor = FColor(222, 158, 65, 255);
@@ -36,5 +36,5 @@ protected:
 	float TimeBetweenTargets = 0.2f;
     
 public:
-	virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy) override;
+	virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy, TArray<TEnumAsByte<ETypeOfDamage>> AdditionalTypesOfDamage) override;
 };

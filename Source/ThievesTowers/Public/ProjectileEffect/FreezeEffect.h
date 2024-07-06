@@ -19,5 +19,5 @@ protected:
     FColor FreezeColor = FColor(79, 143, 186, 255);
     
 public:
-    virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy) override { TargetEnemy->Freeze(FreezeTime, FreezeColor); }
+    virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy, TArray<TEnumAsByte<ETypeOfDamage>> AdditionalTypesOfDamage) override { TargetEnemy->Freeze(FreezeTime, FreezeColor); }
 };

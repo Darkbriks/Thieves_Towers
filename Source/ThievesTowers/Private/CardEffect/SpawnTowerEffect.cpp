@@ -4,7 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Towers/Tower.h"
+#include "Towers/PrimitiveTower.h"
 
 ASpawnTowerEffect::ASpawnTowerEffect()
 {
@@ -75,6 +75,6 @@ void ASpawnTowerEffect::Tick(float DeltaTime)
 bool ASpawnTowerEffect::ApplyEffect()
 {
 	if (TowerToSpawn && !bCanApplyEffect) { Destroy(); return false; }
-	GetWorld()->SpawnActor<ATower>(TowerToSpawn, GetActorLocation(), FRotator::ZeroRotator);
+	if (APrimitiveTower* Tower = GetWorld()->SpawnActor<APrimitiveTower>(TowerToSpawn, GetActorLocation(), FRotator::ZeroRotator)) { Tower->Activate(); }
 	Destroy(); return true;
 }

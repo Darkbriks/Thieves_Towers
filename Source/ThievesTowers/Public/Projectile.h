@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enum/TypeOfDamage.h"
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
@@ -22,6 +23,7 @@ class THIEVESTOWERS_API AProjectile : public AActor
 
 	bool bIsInitialized = false;
 	bool bIsLaunched = false;
+	TArray<TEnumAsByte<ETypeOfDamage>> AdditionalTypesOfDamage;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile - Components")
 	USceneComponent* SceneComponent;
@@ -57,7 +59,7 @@ public:
 	AProjectile();
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
-	void InitializeProjectile(FVector NewTargetPosition, AEnemy* NewTargetEnemy);
+	void InitializeProjectile(FVector NewTargetPosition, AEnemy* NewTargetEnemy, TArray<TEnumAsByte<ETypeOfDamage>> NewAdditionalTypesOfDamage);
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	void Launch();

@@ -1,11 +1,9 @@
 #include "Towers/Tower.h"
-#include "GA_ThievesTowers.h"
+#include "Components/CapsuleComponent.h"
 #include "Enemy/Enemy.h"
 #include "Projectile.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -15,30 +13,17 @@ ATower::ATower()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	SceneComponent->Mobility = EComponentMobility::Movable;
-	RootComponent = SceneComponent;
-
-	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	CapsuleComponent->SetupAttachment(RootComponent);
-	CapsuleComponent->SetCapsuleSize(AttackRange, 5000.0f);
-	CapsuleComponent->SetGenerateOverlapEvents(true);
-
 	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbookComponent"));
 	FlipbookComponent->SetupAttachment(RootComponent);
-	FlipbookComponent->CastShadow = true;
 	FlipbookComponent->SetFlipbook(IdleAnimation);
+	FlipbookComponent->CastShadow = true;
 
 	BasementMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BasementMesh"));
 	BasementMesh->SetupAttachment(RootComponent);
 	BasementMesh->SetGenerateOverlapEvents(false);
-	
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
-	SphereComponent->SetupAttachment(RootComponent);
-	SphereComponent->SetSphereRadius(100.0f);
-	SphereComponent->SetCollisionProfileName("OverlapAllDynamic");
-	SphereComponent->SetGenerateOverlapEvents(true);
-	SphereComponent->ComponentTags.Add("Tower-Basement");
+
+	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ATower::BeginOverlap);
+	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &ATower::EndOverlap);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -89,7 +74,7 @@ bool ATower::Attack()
 		if (AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileLocation, FRotator::ZeroRotator))
 		{
 			Enemy->AddProjectile(Projectile);
-			Projectile->InitializeProjectile(Enemy->GetActorLocation(), Enemy);
+			Projectile->InitializeProjectile(Enemy->GetActorLocation(), Enemy, AdditionalTypesOfDamage);
 			Projectile->Launch();
 			return true;
 		}
@@ -99,7 +84,10 @@ bool ATower::Attack()
 
 void ATower::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->IsA(AEnemy::StaticClass())) { EnemiesInRange.Add(Cast<AEnemy>(OtherActor)); }
+	if (OtherActor->IsA(AEnemy::StaticClass()))
+	{
+		EnemiesInRange.Add(Cast<AEnemy>(OtherActor));
+	}
 }
 
 void ATower::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -119,23 +107,9 @@ void ATower::BeginPlay()
 	Super::BeginPlay();
 	AnimationOverflow = AttackAnimation->GetTotalDuration() - ProjectileLaunchTime;
 	FlipbookComponent->SetFlipbook(IdleAnimation);
-	CapsuleComponent->SetCapsuleRadius(AttackRange);
-	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ATower::BeginOverlap);
-	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &ATower::EndOverlap);
 
-	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->AddTower(this); }
 	Activate();
 }
-
-void ATower::Destroyed()
-{
-	Super::Destroyed();
-	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
-	{
-		GameInstance->RemoveTower(this);
-	}
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 /// ATower - Public Overrides Methods - AActor
@@ -164,14 +138,10 @@ void ATower::Tick(float DeltaTime)
 //////////////////////////////////////////////////////////////////////////
 /// ATower - Public Methods
 //////////////////////////////////////////////////////////////////////////
-void ATower::Activate()
-{
-	bIsActivated = true;
-}
 
 void ATower::Deactivate()
 {
-	bIsActivated = false;
+	Super::Deactivate();
 	AttackCooldown = 0.0f;
 	AnimationCooldown = 0.0f;
 	AnimationOverflow = 0.0f;

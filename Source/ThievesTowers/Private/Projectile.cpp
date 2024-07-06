@@ -45,11 +45,11 @@ void AProjectile::MoveTowardsTarget(float DeltaTime)
 void AProjectile::Impact()
 {
 	if (TargetEnemy == nullptr) { Destroy(); return; }
-	for (TSubclassOf<UProjectileEffect> Effect : Effects)
+	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{
-		if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+		for (TSubclassOf<UProjectileEffect> Effect : Effects)
 		{
-			GameInstance->GetProjectileEffect(Effect)->ApplyEffect(this->GetTransform(), TargetEnemy);
+			GameInstance->GetProjectileEffect(Effect)->ApplyEffect(this->GetTransform(), TargetEnemy, AdditionalTypesOfDamage);
 		}
 	}
 	Destroy();
@@ -65,12 +65,14 @@ FRotator const AProjectile::GetLookAtRotation(FVector Start, FVector Target)
 //////////////////////////////////////////////////////////////////////////
 /// AProjectile - Public Methods
 //////////////////////////////////////////////////////////////////////////
-void AProjectile::InitializeProjectile(FVector NewTargetPosition, AEnemy* NewTargetEnemy)
+void AProjectile::InitializeProjectile(FVector NewTargetPosition, AEnemy* NewTargetEnemy, TArray<TEnumAsByte<ETypeOfDamage>> NewAdditionalTypesOfDamage)
 {
 	if (bIsInitialized) { return; } bIsInitialized = true;
 	InitialPosition = GetActorLocation();
 	TargetPosition = NewTargetPosition;
 	TargetEnemy = NewTargetEnemy;
+	AdditionalTypesOfDamage = NewAdditionalTypesOfDamage;
+	
 	if (SpriteComponent->GetSprite() != nullptr) { SpriteComponent->SetVisibility(false); }
 }
 

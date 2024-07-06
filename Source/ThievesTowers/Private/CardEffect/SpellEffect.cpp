@@ -61,7 +61,7 @@ bool ASpellEffect::ApplyEffect()
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [GameInstance, SpellEffect, Location]()
 			{
 				UProjectileEffect* Effect = GameInstance->GetProjectileEffect(SpellEffect);
-				if (Effect != nullptr) { Effect->ApplyEffect(FTransform(Location), nullptr); }
+				if (Effect != nullptr) { Effect->ApplyEffect(FTransform(Location), nullptr, {}); }
 			}, TimeBeforeDamage, false);
 			Destroy();
 			return true;

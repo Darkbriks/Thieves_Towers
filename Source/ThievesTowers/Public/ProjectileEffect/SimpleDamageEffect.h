@@ -20,5 +20,5 @@ protected:
 	TArray<TEnumAsByte<ETypeOfDamage>> DamageTypes;
 
 public:
-	virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy) override;
+	virtual void ApplyEffect(FTransform Transform, AEnemy* TargetEnemy, TArray<TEnumAsByte<ETypeOfDamage>> AdditionalTypesOfDamage) override;
 };

@@ -6,7 +6,7 @@
 
 class UStaticMeshComponent;
 class USphereComponent;
-class ATower;
+class APrimitiveTower;
 
 UCLASS()
 class THIEVESTOWERS_API ASpawnTowerEffect : public ACardEffect
@@ -21,7 +21,7 @@ protected:
 	USphereComponent* Sphere;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<ATower> TowerToSpawn;
+	TSubclassOf<APrimitiveTower> TowerToSpawn;
 
 	UPROPERTY()
 	TArray<AActor*> OverlappingObstacles;
