@@ -34,5 +34,5 @@ public:
 	ASpellEffect();
 	
 	virtual void Tick(float DeltaTime) override;
-	virtual bool ApplyEffect() override;
+	virtual bool ApplyEffect(FCardInfo CardInfo) override;
 };

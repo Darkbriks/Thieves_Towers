@@ -20,9 +20,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* Sphere;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APrimitiveTower> TowerToSpawn;
-
 	UPROPERTY()
 	TArray<AActor*> OverlappingObstacles;
 
@@ -36,5 +33,5 @@ public:
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	virtual void Tick(float DeltaTime) override;
-	virtual bool ApplyEffect() override;
+	virtual bool ApplyEffect(FCardInfo CardInfo) override;
 };

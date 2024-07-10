@@ -1,7 +1,7 @@
 #include "CardEffect/TimeDelay.h"
 #include "GA_ThievesTowers.h"
 
-bool ATimeDelay::ApplyEffect()
+bool ATimeDelay::ApplyEffect(FCardInfo CardInfo)
 {
 	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{

@@ -14,5 +14,5 @@ protected:
 	int NumberOfCards = 1;
 
 public:
-	virtual bool ApplyEffect() override;
+	virtual bool ApplyEffect(FCardInfo CardInfo) override;
 };

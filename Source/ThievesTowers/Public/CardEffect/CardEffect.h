@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "CardEffect.generated.h"
 
+struct FCardInfo;
+
 UCLASS(Blueprintable)
 class THIEVESTOWERS_API ACardEffect : public AActor
 {
@@ -18,6 +20,6 @@ protected:
 public:
 	ACardEffect();
 
-	virtual bool ApplyEffect();
+	virtual bool ApplyEffect(FCardInfo CardInfo);
 	virtual void CancelEffect();
 };

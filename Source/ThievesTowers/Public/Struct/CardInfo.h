@@ -5,6 +5,7 @@
 #include "Enum/CardType.h"
 #include "CardInfo.generated.h"
 
+class APrimitiveTower;
 class ACardEffect;
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -36,6 +37,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
 	TSubclassOf<ACardEffect> Effect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes" , meta = (EditCondition = "CardType == ECardType::TOWER"))
+	TSubclassOf<APrimitiveTower> Tower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
 	TArray<FName> Tags;
@@ -75,5 +79,6 @@ public:
 	int GetManaCost() { return ManaCost; }
 	int GetGoldCost() { return GoldCost; }
 	TSubclassOf<ACardEffect> GetEffect() { return Effect; }
+	TSubclassOf<APrimitiveTower> GetTower() { return Tower; }
 	TArray<FName> GetTags() { return Tags; }
 };

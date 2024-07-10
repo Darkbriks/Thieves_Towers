@@ -95,7 +95,7 @@ void AMapManager::CardPlayed(int CardIndex, ACardEffect* CardEffect)
 	FCardInfo Card = Hand[CardIndex];
 
 	if (Mana < Card.GetManaCost() || Gold < Card.GetGoldCost()) { CardEffect->CancelEffect(); return; }
-	if (!CardEffect->ApplyEffect()) { return; }
+	if (!CardEffect->ApplyEffect(Card)) { return; }
 	RemoveCardFromHand(CardIndex);
 	Mana -= Card.GetManaCost();
 	Gold -= Card.GetGoldCost();

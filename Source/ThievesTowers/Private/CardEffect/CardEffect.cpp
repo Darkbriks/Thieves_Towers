@@ -1,4 +1,5 @@
 #include "CardEffect/CardEffect.h"
+#include "Struct/CardInfo.h"
 
 ACardEffect::ACardEffect()
 {
@@ -9,7 +10,7 @@ ACardEffect::ACardEffect()
 	Root->SetMobility(EComponentMobility::Movable);
 }
 
-bool ACardEffect::ApplyEffect()
+bool ACardEffect::ApplyEffect(FCardInfo CardInfo)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ACardEffect::ApplyEffect() called"));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ACardEffect::ApplyEffect() called"));

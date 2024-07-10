@@ -43,7 +43,7 @@ void ASpellEffect::Tick(float DeltaTime)
 	this->SetActorLocation(WorldPosition + WorldDirection * 1000.0f);
 }
 
-bool ASpellEffect::ApplyEffect()
+bool ASpellEffect::ApplyEffect(FCardInfo CardInfo)
 {
 	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{

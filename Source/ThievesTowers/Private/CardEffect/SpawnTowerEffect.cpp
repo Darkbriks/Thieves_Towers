@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Towers/PrimitiveTower.h"
+#include "Struct/CardInfo.h"
 
 ASpawnTowerEffect::ASpawnTowerEffect()
 {
@@ -72,9 +73,9 @@ void ASpawnTowerEffect::Tick(float DeltaTime)
 	this->SetActorLocation(WorldPosition + WorldDirection * 1000.0f);
 }
 
-bool ASpawnTowerEffect::ApplyEffect()
+bool ASpawnTowerEffect::ApplyEffect(FCardInfo CardInfo)
 {
-	if (TowerToSpawn && !bCanApplyEffect) { Destroy(); return false; }
-	if (APrimitiveTower* Tower = GetWorld()->SpawnActor<APrimitiveTower>(TowerToSpawn, GetActorLocation(), FRotator::ZeroRotator)) { Tower->Activate(); }
+	if (!bCanApplyEffect || CardInfo.GetCardType() != ECardType::TOWER || !CardInfo.GetTower()) { Destroy(); return false; }
+	if (APrimitiveTower* Tower = GetWorld()->SpawnActor<APrimitiveTower>(CardInfo.GetTower(), GetActorLocation(), FRotator::ZeroRotator)) { Tower->Activate(); }
 	Destroy(); return true;
 }
