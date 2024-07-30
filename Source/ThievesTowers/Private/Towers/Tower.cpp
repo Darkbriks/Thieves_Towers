@@ -1,4 +1,5 @@
 #include "Towers/Tower.h"
+#include "Towers/Targeting/TargetingMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Enemy/Enemy.h"
 #include "Projectile.h"
@@ -29,17 +30,13 @@ ATower::ATower()
 //////////////////////////////////////////////////////////////////////////
 /// ATower - Protected Methods
 //////////////////////////////////////////////////////////////////////////
-int ATower::IndexOfFirstEnemyInRange()
+AEnemy* ATower::GetEnemyInRange()
 {
-	int Index = -1;
-	for (int i = 0; i < EnemiesInRange.Num(); i++) { if (EnemiesInRange[i]->CanBeTargeted()) { Index = i; break; } }
-	return Index;
-}
-
-AEnemy* ATower::GetFirstEnemyInRange()
-{
-	for (AEnemy* Enemy : EnemiesInRange) { if (Enemy->CanBeTargeted()) { return Enemy; } }
-	return nullptr;
+	if (TargetingMode == nullptr)
+	{
+		TargetingMode = NewObject<UTargetingMode>(this, TargetingModeClass);
+	}
+	return TargetingMode->GetEnemy(EnemiesInRange);
 }
 
 void ATower::Anim(float DeltaTime)
@@ -53,7 +50,7 @@ void ATower::Anim(float DeltaTime)
 		if (FlipbookComponent->GetFlipbook() != IdleAnimation) { FlipbookComponent->SetFlipbook(IdleAnimation); }
 	}
 
-	if (AEnemy* Enemy = GetFirstEnemyInRange())
+	if (AEnemy* Enemy = GetEnemyInRange())
 	{
 		TargetRotation = UKismetMathLibrary::FindLookAtRotation(FlipbookComponent->GetComponentLocation(), Enemy->GetActorLocation());
 		const FRotator CurrentRotation = FlipbookComponent->GetComponentRotation();
@@ -64,7 +61,7 @@ void ATower::Anim(float DeltaTime)
 
 bool ATower::Attack()
 {
-	if (AEnemy* Enemy = GetFirstEnemyInRange())
+	if (AEnemy* Enemy = GetEnemyInRange())
 	{
 		FVector ProjectileLocation = GetActorLocation();
 		ProjectileLocation += GetActorForwardVector() * ProjectileXOffset;
@@ -95,7 +92,7 @@ void ATower::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
 		EnemiesInRange.Remove(Cast<AEnemy>(OtherActor));
-		if (IndexOfFirstEnemyInRange() != -1) { AnimationCooldown = 0.0f; }
+		if (GetEnemyInRange() != nullptr) { AnimationCooldown = 0.0f; }
 	}
 }
 
@@ -120,7 +117,7 @@ void ATower::Tick(float DeltaTime)
 	if (!bIsActivated) { return; }
 	
 	if (AttackCooldown < AttackSpeed - ProjectileLaunchTime + DeltaTime) { AttackCooldown += DeltaTime; }
-	else if (IndexOfFirstEnemyInRange() != -1)
+	else if (GetEnemyInRange() != nullptr)
 	{
 		if (AnimationCooldown < ProjectileLaunchTime + DeltaTime) { AnimationCooldown += DeltaTime; }
 		else

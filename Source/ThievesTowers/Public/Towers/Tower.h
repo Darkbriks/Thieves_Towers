@@ -2,9 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "PrimitiveTower.h"
+#include "Towers/Targeting/FirstEnemyInRange.h"
 #include "GameFramework/Actor.h"
 #include "Tower.generated.h"
 
+class UTargetingMode;
 class AEnemy;
 class AProjectile;
 class UPaperFlipbook;
@@ -15,11 +17,16 @@ class THIEVESTOWERS_API ATower : public APrimitiveTower
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	UTargetingMode* TargetingMode;
+
 	float AttackCooldown = 0.0f;
 	float AnimationCooldown = 0.0f;
 	float AnimationOverflow = 0.0f;
-	TArray<AEnemy*> EnemiesInRange;
 	FRotator TargetRotation;
+
+	UPROPERTY()
+	TArray<AEnemy*> EnemiesInRange;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbookComponent* FlipbookComponent;
@@ -30,6 +37,9 @@ class THIEVESTOWERS_API ATower : public APrimitiveTower
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
 	TSubclassOf<AProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
+    TSubclassOf<UTargetingMode> TargetingModeClass = UFirstEnemyInRange::StaticClass();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
 	float AttackSpeed = 1.0f;
@@ -54,11 +64,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Animation")
 	float RotationSpeed = 250.0f;
-
-	int IndexOfFirstEnemyInRange();
-	AEnemy* GetFirstEnemyInRange();
+	
+	AEnemy* GetEnemyInRange();
 	void Anim(float DeltaTime);
-	bool Attack();
+	virtual bool Attack();
 	
 	UFUNCTION()
 	virtual void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -19,19 +19,30 @@ class THIEVESTOWERS_API AMapManager : public AActor
 {
 	GENERATED_BODY()
 
-	const int DeckSize = 8;
-	const int MaxHandSize = 5;
-	const int StartingMana = 3;
-	const int StartingGold = 350;
-	const int StartingLife = 100;
-	const int ClearRoundGold = 200;
-
 	int BonusGold = 0;
 	int BonusMana = 0;
 
 	TArray<AWaveGenerator*> CurrentRoundWaves;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
+	int DeckSize = 8;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
+	int MaxHandSize = 5;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
+	int StartingMana = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
+	int StartingGold = 350;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
+	int StartingLife = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
+	int ClearRoundGold = 250;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Round")
 	UDataTable* CardDataTable;
 	

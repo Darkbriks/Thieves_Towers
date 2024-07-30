@@ -35,11 +35,11 @@ class THIEVESTOWERS_API AProjectile : public AActor
 	UArrowComponent* ArrowComponent;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
-	float Speed = 1000.0f;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
+	float Speed = 5000.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
-	bool bLockOnTarget = false;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
+	bool bLockOnTarget = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile - Attributes")
 	TArray<TSubclassOf<UProjectileEffect>> Effects;
