@@ -25,8 +25,8 @@ class THIEVESTOWERS_API AMapManager : public AActor
 	TArray<AWaveGenerator*> CurrentRoundWaves;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
-	int DeckSize = 8;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
+	//int DeckSize = 8;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
 	int MaxHandSize = 5;
@@ -105,8 +105,8 @@ public:
 	void BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget);
 	
 	// Getters
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int GetDeckSize() { return DeckSize; }
+	//UFUNCTION(BlueprintCallable, BlueprintPure)
+	//int GetDeckSize() { return DeckSize; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetMaxHandSize() { return MaxHandSize; }
@@ -160,6 +160,9 @@ public:
 	void RemoveWave(AWaveGenerator* Wave) { CurrentRoundWaves.Remove(Wave); }
 
 	// Methods
+	UFUNCTION(BlueprintCallable)
+	void InitDeck();
+	
 	UFUNCTION(BlueprintCallable)
 	void InitMap();
 

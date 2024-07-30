@@ -11,6 +11,9 @@
 AMapManager::AMapManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	CardDataTable = nullptr;
+	PostProcessVolume = nullptr;
 }
 
 void AMapManager::BeginPlay()
@@ -106,6 +109,16 @@ void AMapManager::BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget)
 	CardHandWidget->OnCardPlayed.AddDynamic(this, &AMapManager::CardPlayed);
 }
 
+void AMapManager::InitDeck()
+{
+	for (int i = 0; i < CardDataTable->GetRowNames().Num(); i++)
+	{
+		FCardInfo* CardInfo = CardDataTable->FindRow<FCardInfo>(CardDataTable->GetRowNames()[i], "");
+		if (CardInfo != nullptr) { CardDeck.Add(*CardInfo); }
+	}
+}
+
+
 void AMapManager::InitMap()
 {
 	HeroName = "Hero";
@@ -113,8 +126,9 @@ void AMapManager::InitMap()
 	Gold = StartingGold;
 	Life = StartingLife;
 
-	AddCardToDeck(GetRandomCardOfType(ECardType::TOWER));
-	for (int i = 0; i < DeckSize - 1; i++) { AddCardToDeck(GetRandomCard()); }
+	//AddCardToDeck(GetRandomCardOfType(ECardType::TOWER));
+	//for (int i = 0; i < DeckSize - 1; i++) { AddCardToDeck(GetRandomCard()); }
+	InitDeck();
 	PopulateHand();
 
 	InitRound(true);
