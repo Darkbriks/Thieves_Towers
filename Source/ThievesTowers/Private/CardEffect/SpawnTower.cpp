@@ -1,4 +1,4 @@
-#include "CardEffect/SpawnTowerEffect.h"
+#include "CardEffect/SpawnTower.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -7,7 +7,7 @@
 #include "Towers/PrimitiveTower.h"
 #include "Struct/CardInfo.h"
 
-ASpawnTowerEffect::ASpawnTowerEffect()
+ASpawnTower::ASpawnTower()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -20,14 +20,14 @@ ASpawnTowerEffect::ASpawnTowerEffect()
 	Sphere->SetupAttachment(Root);
 	Sphere->SetSphereRadius(100.0f);
 	Sphere->SetCollisionProfileName("OverlapAllDynamic");
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ASpawnTowerEffect::OnOverlapBegin);
-	Sphere->OnComponentEndOverlap.AddDynamic(this, &ASpawnTowerEffect::OnOverlapEnd);
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ASpawnTower::OnOverlapBegin);
+	Sphere->OnComponentEndOverlap.AddDynamic(this, &ASpawnTower::OnOverlapEnd);
 	Sphere->SetMobility(EComponentMobility::Movable);
 
 	OverlappingObstacles = TArray<AActor*>();
 }
 
-void ASpawnTowerEffect::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASpawnTower::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->ActorHasTag("Obstacle") || OtherComp->ComponentHasTag("Tower-Basement"))
 	{
@@ -35,7 +35,7 @@ void ASpawnTowerEffect::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 	}
 }
 
-void ASpawnTowerEffect::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ASpawnTower::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor->ActorHasTag("Obstacle") || OtherComp->ComponentHasTag("Tower-Basement"))
 	{
@@ -43,7 +43,7 @@ void ASpawnTowerEffect::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 	}
 }
 
-void ASpawnTowerEffect::Tick(float DeltaTime)
+void ASpawnTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -73,7 +73,7 @@ void ASpawnTowerEffect::Tick(float DeltaTime)
 	this->SetActorLocation(WorldPosition + WorldDirection * 1000.0f);
 }
 
-bool ASpawnTowerEffect::ApplyEffect(FCardInfo CardInfo)
+bool ASpawnTower::ApplyEffect(FCardInfo CardInfo)
 {
 	if (!bCanApplyEffect || CardInfo.GetCardType() != ECardType::TOWER || !CardInfo.GetTower()) { Destroy(); return false; }
 	if (APrimitiveTower* Tower = GetWorld()->SpawnActor<APrimitiveTower>(CardInfo.GetTower(), GetActorLocation(), FRotator::ZeroRotator)) { Tower->Activate(); }

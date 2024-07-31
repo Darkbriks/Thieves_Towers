@@ -2,14 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "CardEffect/CardEffect.h"
-#include "SpawnTowerEffect.generated.h"
+#include "SpawnTower.generated.h"
 
 class UStaticMeshComponent;
 class USphereComponent;
 class APrimitiveTower;
 
 UCLASS()
-class THIEVESTOWERS_API ASpawnTowerEffect : public ACardEffect
+class THIEVESTOWERS_API ASpawnTower : public ACardEffect
 {
 	GENERATED_BODY()
 
@@ -24,7 +24,7 @@ protected:
 	TArray<AActor*> OverlappingObstacles;
 
 public:
-	ASpawnTowerEffect();
+	ASpawnTower();
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
