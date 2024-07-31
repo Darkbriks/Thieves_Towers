@@ -51,12 +51,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
 	float ZOffset = -550.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
-	UDataTable* CardDataTable;
-
 	virtual void NativeConstruct() override;
-
-	FCardInfo GetRandomCard();
 
 	int GetIndexFromCenter(int Index);
 	FVector2D GetCenterPosition();

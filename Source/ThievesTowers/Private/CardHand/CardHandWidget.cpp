@@ -20,16 +20,6 @@ void UCardHandWidget::NativeConstruct()
 	}
 }
 
-FCardInfo UCardHandWidget::GetRandomCard()
-{
-	if (CardDataTable == nullptr) { return FCardInfo(); }
-	TArray<FName> RowNames = CardDataTable->GetRowNames();
-	if (RowNames.Num() == 0) { return FCardInfo(); }
-	FName RandomRowName = RowNames[FMath::RandRange(0, RowNames.Num() - 1)];
-	FCardInfo* CardInfo = CardDataTable->FindRow<FCardInfo>(RandomRowName, "");
-	return CardInfo == nullptr ? FCardInfo() : *CardInfo;
-}
-
 int UCardHandWidget::GetIndexFromCenter(int Index)
 {
 	if (CardHandOverlay == nullptr) { return 0; }

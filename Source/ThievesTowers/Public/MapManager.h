@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "MapManager.generated.h"
 
+class UDeck;
 class APostProcessVolume;
 class AWaveGenerator;
 class ACard;
@@ -25,9 +26,6 @@ class THIEVESTOWERS_API AMapManager : public AActor
 	TArray<AWaveGenerator*> CurrentRoundWaves;
 
 protected:
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
-	//int DeckSize = 8;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
 	int MaxHandSize = 5;
 
@@ -44,7 +42,8 @@ protected:
 	int ClearRoundGold = 250;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Round")
-	UDataTable* CardDataTable;
+	//UDataTable* CardDataTable;
+	TSubclassOf<UDeck> PlayerDeck;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Round")
 	FName MapName;
@@ -81,9 +80,7 @@ protected:
 
 	// Methods
 	virtual void BeginPlay() override;
-
-	FCardInfo GetRandomCard();
-	FCardInfo GetRandomCardOfType(ECardType CardType);
+	
 	void AddCardToHand(FCardInfo Card);
 	void RemoveCardFromHand(int CardIndex);
 	void AddCardToDeck(FCardInfo Card);
@@ -105,9 +102,6 @@ public:
 	void BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget);
 	
 	// Getters
-	//UFUNCTION(BlueprintCallable, BlueprintPure)
-	//int GetDeckSize() { return DeckSize; }
-
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetMaxHandSize() { return MaxHandSize; }
 

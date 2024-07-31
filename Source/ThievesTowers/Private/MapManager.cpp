@@ -7,12 +7,12 @@
 #include "EngineUtils.h"
 #include "CardEffect/CardEffect.h"
 #include "CardHand/CardHandWidget.h"
+#include "CardHand/Deck.h"
+#include "CardHand/Card.h"
 
 AMapManager::AMapManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	CardDataTable = nullptr;
 	PostProcessVolume = nullptr;
 }
 
@@ -29,32 +29,6 @@ void AMapManager::BeginPlay()
 
 	// Recuperer le widget de la main
 }
-
-FCardInfo AMapManager::GetRandomCard()
-{
-	if (CardDataTable == nullptr) { return FCardInfo(); }
-	TArray<FName> RowNames = CardDataTable->GetRowNames();
-	if (RowNames.Num() == 0) { return FCardInfo(); }
-	FName RandomRowName = RowNames[FMath::RandRange(0, RowNames.Num() - 1)];
-	FCardInfo* CardInfo = CardDataTable->FindRow<FCardInfo>(RandomRowName, "");
-	return CardInfo == nullptr ? FCardInfo() : *CardInfo;
-}
-
-FCardInfo AMapManager::GetRandomCardOfType(ECardType CardType)
-{
-	if (CardDataTable == nullptr) { return FCardInfo(); }
-	TArray<FName> RowNames = CardDataTable->GetRowNames();
-	if (RowNames.Num() == 0) { return FCardInfo(); }
-	TArray<FCardInfo> CardsOfType;
-	for (FName RowName : RowNames)
-	{
-		FCardInfo* CardInfo = CardDataTable->FindRow<FCardInfo>(RowName, "");
-		if (CardInfo != nullptr && CardInfo->GetCardType() == CardType) { CardsOfType.Add(*CardInfo); }
-	}
-	if (CardsOfType.Num() == 0) { return FCardInfo(); }
-	return CardsOfType[FMath::RandRange(0, CardsOfType.Num() - 1)];
-}
-
 
 void AMapManager::AddCardToHand(FCardInfo Card)
 {
@@ -111,10 +85,19 @@ void AMapManager::BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget)
 
 void AMapManager::InitDeck()
 {
-	for (int i = 0; i < CardDataTable->GetRowNames().Num(); i++)
+	UDeck* PlayerDeckObject = PlayerDeck->GetDefaultObject<UDeck>();
+	for (int i = 0; i < PlayerDeckObject->GetDeckSize(); i++)
 	{
-		FCardInfo* CardInfo = CardDataTable->FindRow<FCardInfo>(CardDataTable->GetRowNames()[i], "");
-		if (CardInfo != nullptr) { CardDeck.Add(*CardInfo); }
+		CardDeck.Add(PlayerDeckObject->GetCard(i)->GetDefaultObject<UCard>()->GetCardInfo());
+	}
+
+	// On melange le deck
+	for (int i = 0; i < CardDeck.Num(); i++)
+	{
+		int RandomIndex = FMath::RandRange(0, CardDeck.Num() - 1);
+		FCardInfo Temp = CardDeck[i];
+		CardDeck[i] = CardDeck[RandomIndex];
+		CardDeck[RandomIndex] = Temp;
 	}
 }
 
@@ -125,9 +108,7 @@ void AMapManager::InitMap()
 	Mana = StartingMana;
 	Gold = StartingGold;
 	Life = StartingLife;
-
-	//AddCardToDeck(GetRandomCardOfType(ECardType::TOWER));
-	//for (int i = 0; i < DeckSize - 1; i++) { AddCardToDeck(GetRandomCard()); }
+	
 	InitDeck();
 	PopulateHand();
 

@@ -1,12 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "Struct/CardInfo.h"
 #include "Card.generated.h"
 
 UCLASS(Blueprintable)
-class THIEVESTOWERS_API ACard : public AActor
+class THIEVESTOWERS_API UCard : public UObject
 {
 	GENERATED_BODY()
 
@@ -15,5 +14,7 @@ protected:
 	FCardInfo CardInfo;
 
 public:
-	ACard() { CardInfo = FCardInfo(); }
+	UCard() { CardInfo = FCardInfo(); }
+
+	FCardInfo GetCardInfo() const { return CardInfo; }
 };
