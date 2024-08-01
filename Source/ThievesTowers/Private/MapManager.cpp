@@ -45,8 +45,10 @@ void AMapManager::RemoveCardFromHand(int CardIndex)
 	if (Hand.Num() == 0) { PopulateHand(); }
 }
 
-void AMapManager::AddCardToDeck(FCardInfo Card)
+void AMapManager::AddCardToDeck(FCardInfo Card, const int Position)
 {
+	/*if (Position >= 0 && Position < CardDeck.Num()) { CardDeck.Insert(Card, Position); }
+	else { CardDeck.Add(Card); }*/
 	CardDeck.Add(Card);
 }
 
@@ -83,6 +85,12 @@ void AMapManager::BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget)
 	CardHandWidget->OnCardPlayed.AddDynamic(this, &AMapManager::CardPlayed);
 }
 
+void AMapManager::AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards, int InsertionType, bool bShuffle)
+{
+	for (int i = 0; i < NumberOfCards; i++) { AddCardToDeck(Card->GetDefaultObject<UCard>()->GetCardInfo(), InsertionType == 0 ? 0 : InsertionType == 1 ? -1 : rand() % CardDeck.Num()); }
+	if (bShuffle) { ShuffleDeck(); }
+}
+
 void AMapManager::InitDeck()
 {
 	UDeck* PlayerDeckObject = PlayerDeck->GetDefaultObject<UDeck>();
@@ -91,7 +99,20 @@ void AMapManager::InitDeck()
 		CardDeck.Add(PlayerDeckObject->GetCard(i)->GetDefaultObject<UCard>()->GetCardInfo());
 	}
 
-	// On melange le deck
+	ShuffleDeck();
+
+	// On met une tour en premiere position
+	while (CardDeck[0].GetCardType() != ECardType::TOWER)
+	{
+		// On la remet a la fin
+		FCardInfo Temp = CardDeck[0];
+		CardDeck.RemoveAt(0);
+		CardDeck.Add(Temp);
+	}
+}
+
+void AMapManager::ShuffleDeck()
+{
 	for (int i = 0; i < CardDeck.Num(); i++)
 	{
 		int RandomIndex = FMath::RandRange(0, CardDeck.Num() - 1);
@@ -111,7 +132,6 @@ void AMapManager::InitMap()
 	
 	InitDeck();
 	PopulateHand();
-
 	InitRound(true);
 }
 

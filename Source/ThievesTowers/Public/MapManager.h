@@ -3,14 +3,13 @@
 #include "CoreMinimal.h"
 #include "CardHand/CardHandWidget.h"
 #include "Struct/CardInfo.h"
-#include "Enum/CardType.h"
 #include "GameFramework/Actor.h"
 #include "MapManager.generated.h"
 
+class UCard;
 class UDeck;
 class APostProcessVolume;
 class AWaveGenerator;
-class ACard;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddCardToHand, FCardInfo, Card);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRemoveCardFromHand, int, CardIndex);
@@ -83,7 +82,7 @@ protected:
 	
 	void AddCardToHand(FCardInfo Card);
 	void RemoveCardFromHand(int CardIndex);
-	void AddCardToDeck(FCardInfo Card);
+	void AddCardToDeck(FCardInfo Card, const int Position = -1);
 	void RemoveCardFromDeck(int CardIndex);
 	void PopulateHand();
 	void PopulateDeck();
@@ -153,9 +152,15 @@ public:
 	
 	void RemoveWave(AWaveGenerator* Wave) { CurrentRoundWaves.Remove(Wave); }
 
+	// InsertionType: 0 = Begin, 1 = End, 2 = Random
+	void AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards = 1, int InsertionType = 1, bool bShuffle = false);
+
 	// Methods
 	UFUNCTION(BlueprintCallable)
 	void InitDeck();
+
+	UFUNCTION(BlueprintCallable)
+	void ShuffleDeck();
 	
 	UFUNCTION(BlueprintCallable)
 	void InitMap();
