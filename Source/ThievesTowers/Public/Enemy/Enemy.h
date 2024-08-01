@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Enum/TypeOfDamage.h"
-#include "Enum/EnemyType.h"
+#include "Projectiles/TypeOfDamage.h"
+#include "EnemyType.h"
 #include "Enemy.generated.h"
 
 class UPaperSpriteComponent;

@@ -2,7 +2,7 @@
 #include "Towers/Targeting/TargetingMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Enemy/Enemy.h"
-#include "Projectile.h"
+#include "Projectiles/Projectile.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "Kismet/KismetMathLibrary.h"

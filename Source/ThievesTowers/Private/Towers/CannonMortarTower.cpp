@@ -1,6 +1,6 @@
 #include "Towers/CannonMortarTower.h"
 #include "Towers/Targeting/MostHealtly.h"
-#include "Projectile.h"
+#include "Projectiles/Projectile.h"
 
 ACannonMortarTower::ACannonMortarTower()
 {

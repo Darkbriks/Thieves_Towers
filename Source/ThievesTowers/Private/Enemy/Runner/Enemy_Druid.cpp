@@ -1,6 +1,5 @@
 #include "Enemy/Runner/Enemy_Druid.h"
-
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
 
 void AEnemy_Druid::Tick(float DeltaTime)
 {

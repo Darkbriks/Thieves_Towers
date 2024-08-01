@@ -1,5 +1,5 @@
 #include "Towers/PrimitiveTower.h"
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 

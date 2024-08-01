@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Enum/TypeOfDamage.h"
+#include "Projectiles/TypeOfDamage.h"
 #include "GameFramework/Actor.h"
 #include "PrimitiveTower.generated.h"
 

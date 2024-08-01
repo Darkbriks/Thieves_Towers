@@ -1,6 +1,6 @@
 #include "Obstacle.h"
-#include "GA_ThievesTowers.h"
-#include "MapManager.h"
+#include "Manager/GA_ThievesTowers.h"
+#include "Manager/MapManager.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 

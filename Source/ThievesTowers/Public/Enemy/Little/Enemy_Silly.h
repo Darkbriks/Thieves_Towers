@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemy/Enemy.h"
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
 #include "Enemy_Silly.generated.h"
 
 UCLASS()

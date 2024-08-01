@@ -1,5 +1,5 @@
 #include "Enemy/Bully/Enemy_Legionary.h"
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
 
 void AEnemy_Legionary::TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {

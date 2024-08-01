@@ -1,6 +1,5 @@
 #include "Enemy/Runner/Enemy_Emperor.h"
-
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
 
 void AEnemy_Emperor::Buff(AEnemy* Enemy)
 {

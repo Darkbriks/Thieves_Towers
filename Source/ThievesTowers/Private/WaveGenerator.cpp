@@ -1,5 +1,5 @@
 #include "WaveGenerator.h"
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
 #include "Enemy/Enemy.h"
 #include "Path.h"
 #include "Components/SplineComponent.h"

@@ -1,5 +1,5 @@
 #include "Enemy/Enemy.h"
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
 #include "Path.h"
 #include "Engine/DamageEvents.h"
 #include "PaperSpriteComponent.h"

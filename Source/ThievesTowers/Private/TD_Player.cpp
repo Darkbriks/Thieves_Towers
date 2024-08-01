@@ -4,9 +4,9 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "GA_ThievesTowers.h"
+#include "Manager/GA_ThievesTowers.h"
+#include "Manager/MapManager.h"
 #include "InputActionValue.h"
-#include "MapManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 /// ATD_Player - Constructor
