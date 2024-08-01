@@ -47,9 +47,8 @@ void AMapManager::RemoveCardFromHand(int CardIndex)
 
 void AMapManager::AddCardToDeck(FCardInfo Card, const int Position)
 {
-	/*if (Position >= 0 && Position < CardDeck.Num()) { CardDeck.Insert(Card, Position); }
-	else { CardDeck.Add(Card); }*/
-	CardDeck.Add(Card);
+	if (Position >= 0 && Position < CardDeck.Num()) { CardDeck.Insert(Card, Position); }
+	else { CardDeck.Add(Card); }
 }
 
 void AMapManager::RemoveCardFromDeck(int CardIndex)
@@ -94,17 +93,28 @@ void AMapManager::AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards, int 
 void AMapManager::InitDeck()
 {
 	UDeck* PlayerDeckObject = PlayerDeck->GetDefaultObject<UDeck>();
-	for (int i = 0; i < PlayerDeckObject->GetDeckSize(); i++)
+	int CardNumber = PlayerDeckObject->GetDeckSize();
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, PlayerDeckObject->GetDeckName().ToString());
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Deck size: %d"), PlayerDeckObject->GetDeckSize()));
+	
+	for (int i = 0; i < CardNumber; i++)
 	{
-		CardDeck.Add(PlayerDeckObject->GetCard(i)->GetDefaultObject<UCard>()->GetCardInfo());
+		FCardInfo CardInfo = PlayerDeckObject->GetCard(i)->GetDefaultObject<UCard>()->GetCardInfo();
+		CardDeck.Add(CardInfo);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, CardInfo.GetCardName().ToString());
 	}
 
 	ShuffleDeck();
 
 	// On met une tour en premiere position
-	while (CardDeck[0].GetCardType() != ECardType::TOWER)
+	for (int i = 0; i < CardNumber; i++)
 	{
-		// On la remet a la fin
+		if (CardDeck[0].GetCardType() == ECardType::TOWER)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Tower found at position %d"), i));
+			break;
+		}
 		FCardInfo Temp = CardDeck[0];
 		CardDeck.RemoveAt(0);
 		CardDeck.Add(Temp);
