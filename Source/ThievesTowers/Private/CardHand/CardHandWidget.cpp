@@ -81,8 +81,16 @@ void UCardHandWidget::OnCardDragged(UCardWidget* DraggedCard)
 	if (CardHandOverlay == nullptr) { return; }
 	this->DraggedCardReferance = DraggedCard;
 
-	FCardInfo CardInfo = DraggedCard->GetCardInfo();
-	CardEffect = GetWorld()->SpawnActor<ACardEffect>(CardInfo.GetEffect());
+	/*FCardInfo CardInfo = DraggedCard->GetCardInfo();
+	CardEffect = GetWorld()->SpawnActor<ACardEffect>(CardInfo.GetEffect());*/
+
+	/*TArray<TSubclassOf<ACardEffect>> Effects = DraggedCard->GetCardInfo().GetEffects();
+	for (int i = 0; i < Effects.Num(); i++)
+	{
+		if (Effects[i] == nullptr) { continue; }
+		CardEffect = GetWorld()->SpawnActor<ACardEffect>(Effects[i]);
+		if (CardEffect == nullptr) { UE_LOG(LogTemp, Error, TEXT("CardEffect is null")); continue; }
+	}*/
 }
 
 void UCardHandWidget::OnCardDragCancelled(UCardWidget* CancelDraggedCard, bool bDragIsCancelled)

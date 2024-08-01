@@ -35,8 +35,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
 	int GoldCost;
 
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
+	TSubclassOf<ACardEffect> Effect;*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
-	TSubclassOf<ACardEffect> Effect;
+	TArray<TSubclassOf<ACardEffect>> Effects;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes" , meta = (EditCondition = "CardType == ECardType::TOWER"))
 	TSubclassOf<APrimitiveTower> Tower;
@@ -57,7 +60,7 @@ public:
 		Tags = TArray<FName>();
 	}
 
-	FCardInfo(FName NewCardName, FText NewDescription, UTexture2D* NewCardTexture, TEnumAsByte<ERarity> NewRarity, TEnumAsByte<ECardType> NewCardType, int NewManaCost, int NewGoldCost, TSubclassOf<ACardEffect> NewEffect, TArray<FName> NewTags)
+	/*FCardInfo(FName NewCardName, FText NewDescription, UTexture2D* NewCardTexture, TEnumAsByte<ERarity> NewRarity, TEnumAsByte<ECardType> NewCardType, int NewManaCost, int NewGoldCost, TArray<TSubclassOf<ACardEffect>> NewEffects, TArray<FName> NewTags)
 	{
 		CardName = NewCardName;
 		Description = NewDescription;
@@ -66,9 +69,10 @@ public:
 		CardType = NewCardType;
 		ManaCost = NewManaCost;
 		GoldCost = NewGoldCost;
-		Effect = NewEffect;
+		//Effect = NewEffect;
+		Effects = NewEffects;
 		Tags = NewTags;
-	}
+	}*/
 
 	// Getters
 	FName GetCardName() { return CardName; }
@@ -78,7 +82,8 @@ public:
 	TEnumAsByte<ECardType> GetCardType() { return CardType; }
 	int GetManaCost() { return ManaCost; }
 	int GetGoldCost() { return GoldCost; }
-	TSubclassOf<ACardEffect> GetEffect() { return Effect; }
+	//TSubclassOf<ACardEffect> GetEffect() { return Effect; }
+	TArray<TSubclassOf<ACardEffect>> GetEffects() { return Effects; }
 	TSubclassOf<APrimitiveTower> GetTower() { return Tower; }
 	TArray<FName> GetTags() { return Tags; }
 };
