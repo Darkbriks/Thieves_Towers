@@ -88,7 +88,7 @@ protected:
 	void PopulateDeck();
 
 	UFUNCTION()
-	void CardPlayed(int CardIndex, ACardEffect* CardEffect);
+	void CardPlayed(int CardIndex, TArray<ACardEffect*> CardEffects);
 
 public:
 	// Delegates

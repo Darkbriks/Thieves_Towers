@@ -10,7 +10,7 @@ struct FCardInfo;
 class UOverlay;
 class UCardWidget;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCardPlayed, int, CardIndex, ACardEffect*, CardEffect);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCardPlayed, int, CardIndex, TArray<ACardEffect*>, CardEffects);
 
 UCLASS(Blueprintable)
 class THIEVESTOWERS_API UCardHandWidget : public UUserWidget, public ICardHandInterface
@@ -30,7 +30,7 @@ class THIEVESTOWERS_API UCardHandWidget : public UUserWidget, public ICardHandIn
 	UCardWidget* DragHoveredCard = nullptr;
 
 	UPROPERTY()
-	ACardEffect* CardEffect = nullptr;
+	TArray<ACardEffect*> CardEffects;
 
 protected:
 	UPROPERTY(meta = (BindWidget))

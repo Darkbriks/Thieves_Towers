@@ -42,6 +42,9 @@ protected:
 	TSubclassOf<APrimitiveTower> Tower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
+	bool bIsDestroyedAfterUse;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
 	TArray<FName> Tags;
 
 public:
@@ -54,10 +57,11 @@ public:
 		CardType = ECardType::MISCELLANEOUS;
 		ManaCost = 0;
 		GoldCost = 0;
+		bIsDestroyedAfterUse = false;
 		Tags = TArray<FName>();
 	}
 
-	FCardInfo(FName NewCardName, FText NewDescription, UTexture2D* NewCardTexture, TEnumAsByte<ERarity> NewRarity, TEnumAsByte<ECardType> NewCardType, int NewManaCost, int NewGoldCost, TArray<TSubclassOf<ACardEffect>> NewEffects, TArray<FName> NewTags)
+	FCardInfo(FName NewCardName, FText NewDescription, UTexture2D* NewCardTexture, TEnumAsByte<ERarity> NewRarity, TEnumAsByte<ECardType> NewCardType, int NewManaCost, int NewGoldCost, TArray<TSubclassOf<ACardEffect>> NewEffects, bool bNewIsDestroyedAfterUse, TArray<FName> NewTags)
 	{
 		CardName = NewCardName;
 		Description = NewDescription;
@@ -67,6 +71,7 @@ public:
 		ManaCost = NewManaCost;
 		GoldCost = NewGoldCost;
 		Effects = NewEffects;
+		bIsDestroyedAfterUse = bNewIsDestroyedAfterUse;
 		Tags = NewTags;
 	}
 
@@ -80,5 +85,6 @@ public:
 	int GetGoldCost() { return GoldCost; }
 	TArray<TSubclassOf<ACardEffect>> GetEffects() { return Effects; }
 	TSubclassOf<APrimitiveTower> GetTower() { return Tower; }
+	bool GetIsDestroyedAfterUse() { return bIsDestroyedAfterUse; }
 	TArray<FName> GetTags() { return Tags; }
 };

@@ -26,8 +26,6 @@ void AMapManager::BeginPlay()
 	CardDeck.Empty();
 	CardDiscard.Empty();
 	Hand.Empty();
-
-	// Recuperer le widget de la main
 }
 
 void AMapManager::AddCardToHand(FCardInfo Card)
@@ -39,7 +37,8 @@ void AMapManager::AddCardToHand(FCardInfo Card)
 void AMapManager::RemoveCardFromHand(int CardIndex)
 {
 	if (CardIndex < 0 || CardIndex >= Hand.Num()) { return; }
-	CardDiscard.Add(Hand[CardIndex]); Hand.RemoveAt(CardIndex);
+	if (!Hand[CardIndex].GetIsDestroyedAfterUse()) { CardDiscard.Add(Hand[CardIndex]); }
+	Hand.RemoveAt(CardIndex);
 	OnRemoveCardFromHand.Broadcast(CardIndex);
 
 	if (Hand.Num() == 0) { PopulateHand(); }
@@ -64,16 +63,26 @@ void AMapManager::PopulateDeck()
 	// On melange la defausse, et on la remet dans le deck
 	for (FCardInfo Card : CardDiscard) { AddCardToDeck(Card); }
 	CardDiscard.Empty();
-	for (int i = 0; i < CardDeck.Num(); i++) { int RandomIndex = FMath::RandRange(0, CardDeck.Num() - 1); FCardInfo Temp = CardDeck[i]; CardDeck[i] = CardDeck[RandomIndex]; CardDeck[RandomIndex] = Temp; }
+	ShuffleDeck();
 }
 
-void AMapManager::CardPlayed(int CardIndex, ACardEffect* CardEffect)
+void AMapManager::CardPlayed(int CardIndex, TArray<ACardEffect*> CardEffects)
 {
-	if (CardIndex < 0 || CardIndex >= Hand.Num()) { CardEffect->CancelEffect(); return; }
+	if (CardIndex < 0 || CardIndex >= Hand.Num()) { for (ACardEffect* CardEffect : CardEffects) { CardEffect->CancelEffect(); } return; }
 	FCardInfo Card = Hand[CardIndex];
 
-	if (Mana < Card.GetManaCost() || Gold < Card.GetGoldCost()) { CardEffect->CancelEffect(); return; }
-	if (!CardEffect->ApplyEffect(Card)) { return; }
+	if (Mana < Card.GetManaCost() || Gold < Card.GetGoldCost()) { for (ACardEffect* CardEffect : CardEffects) { CardEffect->CancelEffect(); } return; }
+	
+	for (ACardEffect* CardEffect : CardEffects)
+	{
+		if ( !CardEffect->ApplyEffect(Card) )
+		{
+			CardEffect->Destroy();
+			UE_LOG(LogTemp, Error, TEXT("MapManager::CardPlayed - CardEffect not applied"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CardEffect not applied")));
+		}
+	}
+	
 	RemoveCardFromHand(CardIndex);
 	Mana -= Card.GetManaCost();
 	Gold -= Card.GetGoldCost();
@@ -95,15 +104,7 @@ void AMapManager::InitDeck()
 	UDeck* PlayerDeckObject = PlayerDeck->GetDefaultObject<UDeck>();
 	int CardNumber = PlayerDeckObject->GetDeckSize();
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, PlayerDeckObject->GetDeckName().ToString());
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Deck size: %d"), PlayerDeckObject->GetDeckSize()));
-	
-	for (int i = 0; i < CardNumber; i++)
-	{
-		FCardInfo CardInfo = PlayerDeckObject->GetCard(i)->GetDefaultObject<UCard>()->GetCardInfo();
-		CardDeck.Add(CardInfo);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, CardInfo.GetCardName().ToString());
-	}
+	for (int i = 0; i < CardNumber; i++) { CardDeck.Add(PlayerDeckObject->GetCard(i)->GetDefaultObject<UCard>()->GetCardInfo()); }
 
 	ShuffleDeck();
 

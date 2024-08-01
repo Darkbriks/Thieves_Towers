@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "CardEffect/CardEffect.h"
-#include "GiveRessources.generated.h"
+#include "GiveResources.generated.h"
 
 UCLASS()
-class THIEVESTOWERS_API AGiveRessources : public ACardEffect
+class THIEVESTOWERS_API AGiveResources : public ACardEffect
 {
 	GENERATED_BODY()
 

@@ -1,7 +1,7 @@
-#include "CardEffect/GiveRessources.h"
+#include "CardEffect/GiveResources.h"
 #include "GA_ThievesTowers.h"
 
-bool AGiveRessources::ApplyEffect(FCardInfo CardInfo)
+bool AGiveResources::ApplyEffect(FCardInfo CardInfo)
 {
 	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{

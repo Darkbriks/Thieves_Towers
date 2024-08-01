@@ -81,23 +81,21 @@ void UCardHandWidget::OnCardDragged(UCardWidget* DraggedCard)
 	if (CardHandOverlay == nullptr) { return; }
 	this->DraggedCardReferance = DraggedCard;
 
-	/*FCardInfo CardInfo = DraggedCard->GetCardInfo();
-	CardEffect = GetWorld()->SpawnActor<ACardEffect>(CardInfo.GetEffect());*/
-
 	TArray<TSubclassOf<ACardEffect>> Effects = DraggedCard->GetCardInfo().GetEffects();
+	CardEffects.SetNum(Effects.Num());
 	for (int i = 0; i < Effects.Num(); i++)
 	{
 		if (Effects[i] == nullptr) { continue; }
-		CardEffect = GetWorld()->SpawnActor<ACardEffect>(Effects[i]);
-		if (CardEffect == nullptr) { UE_LOG(LogTemp, Error, TEXT("CardEffect is null")); }
+		CardEffects[i] = GetWorld()->SpawnActor<ACardEffect>(Effects[i]);
+		if (CardEffects[i] == nullptr) { UE_LOG(LogTemp, Error, TEXT("CardEffect is null")); }
 	}
 }
 
 void UCardHandWidget::OnCardDragCancelled(UCardWidget* CancelDraggedCard, bool bDragIsCancelled)
 {
-	if (CardHandOverlay == nullptr || bDragIsCancelled) { CardEffect->CancelEffect(); return; }
+	if (CardHandOverlay == nullptr || bDragIsCancelled) { for (ACardEffect* CardEffect : CardEffects) { CardEffect->CancelEffect(); } return; }
 	if (DraggedCardReferance == CancelDraggedCard) { DraggedCardReferance = nullptr; }
-	OnCardPlayed.Broadcast(CardWidgets.Find(CancelDraggedCard), CardEffect);
+	OnCardPlayed.Broadcast(CardWidgets.Find(CancelDraggedCard), CardEffects);
 }
 
 void UCardHandWidget::OnCardDragEnter(UCardWidget* HoveredCard)
