@@ -24,6 +24,7 @@ protected:
 	USphereComponent* SphereComponent;
 	
 	bool bIsActivated = true;
+
 	TArray<TEnumAsByte<ETypeOfDamage>> AdditionalTypesOfDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
