@@ -1,6 +1,6 @@
 #include "Cards/Hand/CardWidget.h"
-#include "Components/Image.h"
 #include "Cards/CardInfo.h"
+#include "Components/Image.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
