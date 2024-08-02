@@ -11,6 +11,14 @@ class UCardHandWidget;
 class APostProcessVolume;
 class AWaveGenerator;
 
+UENUM(Blueprintable)
+enum EInsertionType
+{
+	BEGIN = 0,
+	END = 1,
+	RANDOM = 2
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddCardToHand, FCardInfo, Card);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRemoveCardFromHand, int, CardIndex);
 
@@ -80,7 +88,7 @@ protected:
 	// Methods
 	virtual void BeginPlay() override;
 	
-	void AddCardToHand(FCardInfo Card);
+	void AddCardToHand(FCardInfo Card, const int Position = -1);
 	void RemoveCardFromHand(int CardIndex);
 	void AddCardToDeck(FCardInfo Card, const int Position = -1);
 	void RemoveCardFromDeck(int CardIndex);
@@ -152,8 +160,8 @@ public:
 	
 	void RemoveWave(AWaveGenerator* Wave) { CurrentRoundWaves.Remove(Wave); }
 
-	// InsertionType: 0 = Begin, 1 = End, 2 = Random
-	void AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards = 1, int InsertionType = 1, bool bShuffle = false);
+	void AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards = 1, TEnumAsByte<EInsertionType> InsertionType = EInsertionType::END, bool bShuffle = false);
+	void AddCardToHand(TSubclassOf<UCard> Card, int NumberOfCards = 1, TEnumAsByte<EInsertionType> InsertionType = EInsertionType::END);
 
 	// Methods
 	UFUNCTION(BlueprintCallable)

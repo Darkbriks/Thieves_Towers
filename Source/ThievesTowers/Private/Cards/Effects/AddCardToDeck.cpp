@@ -7,7 +7,8 @@ bool AAddCardToDeck::ApplyEffect(FCardInfo CardInfo)
 	{
 		if (AMapManager* MapManager = GameInstance->GetMapManager())
 		{
-			MapManager->AddCardToDeck(GeneratedCard, CardGenerationAmount, InsertionType, bShuffleDeck);
+			if (!bPlaceInHand) { MapManager->AddCardToDeck(GeneratedCard, CardGenerationAmount, InsertionType, bShuffleDeck); }
+			else { MapManager->AddCardToHand(GeneratedCard, CardGenerationAmount, InsertionType); }
 			Destroy();
 			return true;
 		}

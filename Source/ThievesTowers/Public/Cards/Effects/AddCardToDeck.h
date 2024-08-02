@@ -2,17 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "CardEffect.h"
+#include "Manager/MapManager.h"
 #include "AddCardToDeck.generated.h"
 
 class UCard;
-
-UENUM(Blueprintable)
-enum EInsertionType
-{
-	BEGIN = 0,
-	END = 1,
-	RANDOM = 2
-};
 
 UCLASS()
 class THIEVESTOWERS_API AAddCardToDeck : public ACardEffect
@@ -25,6 +18,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	int CardGenerationAmount = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
+	bool bPlaceInHand = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<EInsertionType> InsertionType = EInsertionType::RANDOM;

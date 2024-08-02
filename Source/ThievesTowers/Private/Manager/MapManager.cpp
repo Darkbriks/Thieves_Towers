@@ -28,9 +28,10 @@ void AMapManager::BeginPlay()
 	Hand.Empty();
 }
 
-void AMapManager::AddCardToHand(FCardInfo Card)
+void AMapManager::AddCardToHand(FCardInfo Card, const int Position)
 {
-	if (Hand.Num() >= MaxHandSize) { return; } Hand.Add(Card);
+	if (Position >= 0 && Position < Hand.Num()) { Hand.Insert(Card, Position); }
+	else { Hand.Add(Card); }
 	OnAddCardToHand.Broadcast(Card);
 }
 
@@ -93,10 +94,37 @@ void AMapManager::BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget)
 	CardHandWidget->OnCardPlayed.AddDynamic(this, &AMapManager::CardPlayed);
 }
 
-void AMapManager::AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards, int InsertionType, bool bShuffle)
+void AMapManager::AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards, TEnumAsByte<EInsertionType> InsertionType, bool bShuffle)
 {
-	for (int i = 0; i < NumberOfCards; i++) { AddCardToDeck(Card->GetDefaultObject<UCard>()->GetCardInfo(), InsertionType == 0 ? 0 : InsertionType == 1 ? -1 : rand() % CardDeck.Num()); }
+	for (int i = 0; i < NumberOfCards; i++)
+	{
+		int Index;
+		switch (InsertionType)
+		{
+			case BEGIN: Index = 0; break;
+			case RANDOM: Index = rand() % CardDeck.Num(); break;
+			default: Index = -1; break;
+		}
+		
+		AddCardToDeck(Card->GetDefaultObject<UCard>()->GetCardInfo(), Index);
+	}
 	if (bShuffle) { ShuffleDeck(); }
+}
+
+void AMapManager::AddCardToHand(TSubclassOf<UCard> Card, int NumberOfCards, TEnumAsByte<EInsertionType> InsertionType)
+{
+	for (int i = 0; i < NumberOfCards; i++)
+	{
+		int Index;
+		switch (InsertionType)
+		{
+			case BEGIN: Index = 0; break;
+			case RANDOM: Index = rand() % Hand.Num(); break;
+			default: Index = -1; break;
+		}
+		
+		AddCardToHand(Card->GetDefaultObject<UCard>()->GetCardInfo(), Index);
+	}
 }
 
 void AMapManager::InitDeck()
