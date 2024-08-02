@@ -22,9 +22,7 @@ void ADamageArea::BeginPlay()
 void ADamageArea::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	UE_LOG(LogTemp, Warning, TEXT("ADamageArea::Tick"));
-
+	
 	CreationTime += DeltaTime;
 	if (!bInfinitely && CreationTime >= Duration) { Destroy(); }
 	if (DamageCooldown <= 0)
