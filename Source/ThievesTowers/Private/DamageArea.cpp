@@ -1,5 +1,4 @@
 #include "DamageArea.h"
-#include "Components/SphereComponent.h"
 #include "Enemy/Enemy.h"
 #include "Engine/DamageEvents.h"
 
