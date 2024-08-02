@@ -11,13 +11,6 @@ ADamageArea::ADamageArea()
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
-
-	/*Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	Collision->SetupAttachment(Root);
-	Collision->SetGenerateOverlapEvents(true);
-	Collision->SetCollisionProfileName("OverlapAll");
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &ADamageArea::BeginOverlap);
-	Collision->OnComponentEndOverlap.AddDynamic(this, &ADamageArea::EndOverlap);*/
 }
 
 void ADamageArea::BeginPlay()
@@ -56,20 +49,3 @@ void ADamageArea::Tick(float DeltaTime)
 		DamageCooldown -= DeltaTime;
 	}
 }
-
-/*void ADamageArea::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor->IsA(AEnemy::StaticClass()))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Enemy in range");
-		EnemiesInRange.Add(Cast<AEnemy>(OtherActor));
-	}
-}
-
-void ADamageArea::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor->IsA(AEnemy::StaticClass()))
-	{
-		EnemiesInRange.Remove(Cast<AEnemy>(OtherActor));
-	}
-}*/

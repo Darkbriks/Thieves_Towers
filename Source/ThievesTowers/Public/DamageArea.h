@@ -16,12 +16,6 @@ class THIEVESTOWERS_API ADamageArea : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* Root;
 
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USphereComponent* Collision;*/
-
-	/*UPROPERTY()
-	TArray<AEnemy*> EnemiesInRange;*/
-
 	float DamageCooldown = 0.0f;
 	float CreationTime = 0.0f;
 	
@@ -65,14 +59,7 @@ protected:
 	float ColorEffectAlpha = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage Area", meta = (EditCondition = "bApplyColorEffect"))
-	FColor ColorEffect = FColor::White;
-
-	//UFUNCTION()
-	//void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	//UFUNCTION()
-	//void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
+	FColor ColorEffect = FColor::White;	
 
 public:
 	ADamageArea();
