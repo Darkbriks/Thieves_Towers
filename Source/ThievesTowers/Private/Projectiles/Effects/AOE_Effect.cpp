@@ -3,6 +3,7 @@
 #include "Enemy/Enemy.h"
 #include "Struct/AreaDamage.h"
 #include "Engine/DamageEvents.h"
+#include "DamageArea.h"
 
 void UAOE_Effect::ApplyEffect(FTransform Transform, AEnemy* TargetEnemy, TArray<TEnumAsByte<ETypeOfDamage>> AdditionalTypesOfDamage)
 {
@@ -23,6 +24,15 @@ void UAOE_Effect::ApplyEffect(FTransform Transform, AEnemy* TargetEnemy, TArray<
 					break;
 				}
 			}
+		}
+
+		if (bSpawnDamageArea && DamageAreaClass)
+		{
+			//GetWorld()->SpawnActor<ADamageArea>(DamageAreaClass, Transform.GetLocation(), FRotator::ZeroRotator);
+			FVector Location = Transform.GetLocation();
+			Location.Z = DamageAreaHeight;
+			ADamageArea* DamageArea = GetWorld()->SpawnActor<ADamageArea>(DamageAreaClass, Location, FRotator::ZeroRotator);
+			if (!DamageArea) { UE_LOG(LogTemp, Error, TEXT("Error spawning DamageArea")); return; }
 		}
 	}
 }

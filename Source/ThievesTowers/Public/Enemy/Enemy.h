@@ -19,8 +19,10 @@ class THIEVESTOWERS_API AEnemy : public AActor
 	int StartLife = 0;
 	int Life = 0;
 	int LifeOverflows = 0;
-
-	float RemainingHealTime = 0.0f;
+	
+	float ColorEffectDuration = 0.0f;
+	float ColorEffectRemainingTime = 0.0f;
+	float ColorEffectAlpha = 0.0f;
 
 	float RemainingFreezeTime = 0.0f;
 	int DamageAfterFreeze = 0;
@@ -40,11 +42,14 @@ protected:
 	float CurrentPathLength = 0.0f;
 	float TraveledDistance = 0.0f;
 	float TotalDistance = 0.0f;
+
+	UPROPERTY()
 	APath* CurrentPath = nullptr;
 
-	bool bCanBeTargeted = true;
-
+	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicMaterial = nullptr;
+
+	bool bCanBeTargeted = true;
 	
 	// Attributes
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy - Attributes")
@@ -116,6 +121,7 @@ public:
 	void Heal(int HealAmount);
 	virtual void TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	virtual void Freeze(float FreezeTime, FColor FreezeColor, int NewDamageAfterFreeze = 0, TArray<TEnumAsByte<ETypeOfDamage>> NewTypesOfDamage = TArray<TEnumAsByte<ETypeOfDamage>>());
+	void AddColorEffect(const FColor NewColor, const float NewEffectTime, const float NewEffectAlpha);
 	void AddProjectile(AProjectile* NewProjectile) { Projectiles.Add(NewProjectile); }
 
 	// Overriden methods

@@ -77,7 +77,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 
 void AEnemy::Die(bool bExecuteByTower)
 {
-	//for (AProjectile* Projectile : Projectiles) { if (IsValid(Projectile)) { Projectile->Destroy(); } }
 	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{
 		GameInstance->RemoveEnemy(this);
@@ -94,8 +93,7 @@ void AEnemy::Heal(int HealAmount)
 {
 	if (HealAmount > 0 && Life + HealAmount <= MaxLife) { Life += HealAmount; }
 	else { Life = MaxLife; }
-	RemainingHealTime = HealEffectTime;
-	DynamicMaterial->SetVectorParameterValue(FName("Color"), HealColor);
+	AddColorEffect(HealColor, HealEffectTime, 0.0f);
 }
 
 void AEnemy::TakeDamage(int DamageAmount, TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -116,13 +114,17 @@ void AEnemy::Freeze(float FreezeTime, FColor FreezeColor, int NewDamageAfterFree
 	RemainingFreezeTime = FreezeTime;
 	DamageAfterFreeze = NewDamageAfterFreeze;
 	FreezeTypesOfDamage = NewTypesOfDamage;
-	
-	if (DynamicMaterial)
-	{
-		DynamicMaterial->SetScalarParameterValue(FName("Alpha"), 0.0f);
-		DynamicMaterial->SetVectorParameterValue(FName("Color"), FreezeColor);
-	}
+	AddColorEffect(FreezeColor, FreezeTime, 0.0f);
 }
+
+void AEnemy::AddColorEffect(const FColor NewColor, const float NewEffectTime, const float NewEffectAlpha)
+{
+	ColorEffectRemainingTime = NewEffectTime;
+	ColorEffectDuration = NewEffectTime;
+	ColorEffectAlpha = NewEffectAlpha;
+	if (DynamicMaterial) { DynamicMaterial->SetVectorParameterValue(FName("Color"), NewColor); }
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 ///	AEnemy - Public Overrides Methods - AActor
@@ -130,6 +132,7 @@ void AEnemy::Freeze(float FreezeTime, FColor FreezeColor, int NewDamageAfterFree
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	if (RemainingFreezeTime > 0.0f)
 	{
 		RemainingFreezeTime -= DeltaTime;
@@ -142,12 +145,14 @@ void AEnemy::Tick(float DeltaTime)
 		}
 		return;
 	}
-	if (RemainingHealTime > 0.0f)
+
+	if (ColorEffectRemainingTime > 0.0f)
 	{
-		RemainingHealTime -= DeltaTime;
-		float HealPercent = RemainingHealTime / HealEffectTime;
-		if (RemainingHealTime > 0) { DynamicMaterial->SetScalarParameterValue(FName("Alpha"), FMath::Lerp(1.0f, HealEffectAlpha, HealPercent)); }
+		ColorEffectRemainingTime -= DeltaTime;
+		const float ColorEffectPercent = ColorEffectRemainingTime / ColorEffectDuration;
+		if (ColorEffectRemainingTime > 0) { DynamicMaterial->SetScalarParameterValue(FName("Alpha"), FMath::Lerp(1.0f, ColorEffectAlpha, ColorEffectPercent)); }
 		else { DynamicMaterial->SetScalarParameterValue(FName("Alpha"), 1.0f); }
 	}
+	
 	MoveAlongPath(DeltaTime);
 }
