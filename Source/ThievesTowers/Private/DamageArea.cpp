@@ -3,6 +3,8 @@
 #include "Enemy/Enemy.h"
 #include "Engine/DamageEvents.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+
 ADamageArea::ADamageArea()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -10,12 +12,12 @@ ADamageArea::ADamageArea()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
 
-	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
+	/*Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	Collision->SetupAttachment(Root);
 	Collision->SetGenerateOverlapEvents(true);
 	Collision->SetCollisionProfileName("OverlapAll");
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ADamageArea::BeginOverlap);
-	Collision->OnComponentEndOverlap.AddDynamic(this, &ADamageArea::EndOverlap);
+	Collision->OnComponentEndOverlap.AddDynamic(this, &ADamageArea::EndOverlap);*/
 }
 
 void ADamageArea::BeginPlay()
@@ -33,11 +35,19 @@ void ADamageArea::Tick(float DeltaTime)
 	if (!bInfinitely && CreationTime >= Duration) { Destroy(); }
 	if (DamageCooldown <= 0)
 	{
-		TArray<AEnemy*> Enemies = EnemiesInRange;
-		for (AEnemy* Enemy : Enemies)
+		TArray<AActor*> OverlappingActors;
+		TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+		TraceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+		if (bUseBoxCollision) { UKismetSystemLibrary::BoxOverlapActors(GetWorld(), GetActorLocation(), BoxExtent, TraceObjectTypes, AEnemy::StaticClass(), TArray<AActor*>(), OverlappingActors); }
+		else { UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), SphereRadius, TraceObjectTypes, AEnemy::StaticClass(), TArray<AActor*>(), OverlappingActors); }
+		
+		for (AActor* Actor : OverlappingActors)
 		{
-			Enemy->TakeDamage(Damage, DamageTypes, FDamageEvent(), nullptr, this);
-			if (bApplyColorEffect) { Enemy->AddColorEffect(ColorEffect, ColorEffectDuration, ColorEffectAlpha); }
+			if (AEnemy* Enemy = Cast<AEnemy>(Actor))
+			{
+				Enemy->TakeDamage(Damage, DamageTypes, FDamageEvent(), nullptr, this);
+				if (bApplyColorEffect) { Enemy->AddColorEffect(ColorEffect, ColorEffectDuration, ColorEffectAlpha); }
+			}
 		}
 		DamageCooldown = DamageInterval;
 	}
@@ -47,7 +57,7 @@ void ADamageArea::Tick(float DeltaTime)
 	}
 }
 
-void ADamageArea::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+/*void ADamageArea::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
@@ -62,4 +72,4 @@ void ADamageArea::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	{
 		EnemiesInRange.Remove(Cast<AEnemy>(OtherActor));
 	}
-}
+}*/
