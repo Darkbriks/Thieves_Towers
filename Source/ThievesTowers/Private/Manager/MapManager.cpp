@@ -57,7 +57,22 @@ void AMapManager::RemoveCardFromDeck(int CardIndex)
 	if (CardDeck.Num() == 0) { PopulateDeck(); }
 }
 
-void AMapManager::PopulateHand() { for (int i = Hand.Num(); i < MaxHandSize; i++) { AddCardToHand(CardDeck[0]); RemoveCardFromDeck(0); } }
+void AMapManager::PopulateHand(bool bUseDelay, float Delay)
+{
+	for (int i = Hand.Num(); i < MaxHandSize; i++)
+	{
+		if (bUseDelay)
+		{
+			FTimerHandle TimerHandle; FTimerDelegate TimerDelegate;
+			TimerDelegate.BindLambda([this, i]() { AddCardToHand(CardDeck[0]); RemoveCardFromDeck(0); });
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, Delay * i + 0.1, false);
+		}
+		else
+		{
+			AddCardToHand(CardDeck[0]); RemoveCardFromDeck(0);
+		}
+	}
+}
 
 void AMapManager::PopulateDeck()
 {
@@ -91,7 +106,8 @@ void AMapManager::CardPlayed(int CardIndex, TArray<ACardEffect*> CardEffects)
 
 void AMapManager::BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget)
 {
-	CardHandWidget->OnCardPlayed.AddDynamic(this, &AMapManager::CardPlayed);
+	W_CardHand = CardHandWidget;
+	W_CardHand->OnCardPlayed.AddDynamic(this, &AMapManager::CardPlayed);
 }
 
 void AMapManager::AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards, TEnumAsByte<EInsertionType> InsertionType, bool bShuffle)
@@ -139,11 +155,7 @@ void AMapManager::InitDeck()
 	// On met une tour en premiere position
 	for (int i = 0; i < CardNumber; i++)
 	{
-		if (CardDeck[0].GetCardType() == ECardType::TOWER)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Tower found at position %d"), i));
-			break;
-		}
+		if (CardDeck[0].GetCardType() == ECardType::TOWER) { break; }
 		FCardInfo Temp = CardDeck[0];
 		CardDeck.RemoveAt(0);
 		CardDeck.Add(Temp);
@@ -170,14 +182,17 @@ void AMapManager::InitMap()
 	Life = StartingLife;
 	
 	InitDeck();
-	PopulateHand();
-	InitRound(true);
+	PopulateHand(true, InitialCardDrawDelay);
+
+	FTimerHandle TimerHandle; FTimerDelegate TimerDelegate;
+	TimerDelegate.BindLambda([this]() { W_CardHand->CanValidateDeck(); });
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 5 * (InitialCardDrawDelay + 0.1), false);
 }
 
 void AMapManager::InitRound(bool bIsFirstRound)
 {
 	UE_LOG(LogTemp, Warning, TEXT("InitRound"));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Round %d is initializing"), CurrentRound));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, FString::Printf(TEXT("Round %d is initializing"), CurrentRound));
 
 	PopulateHand();
 	
@@ -203,7 +218,7 @@ void AMapManager::InitRound(bool bIsFirstRound)
 void AMapManager::StartRound()
 {
 	UE_LOG(LogTemp, Warning, TEXT("StartRound"));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Round %d is starting"), CurrentRound));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, FString::Printf(TEXT("Round %d is starting"), CurrentRound));
 
 	for (AWaveGenerator* Wave : CurrentRoundWaves) { Wave->StartWaveGeneration(); }
 }
@@ -211,7 +226,7 @@ void AMapManager::StartRound()
 void AMapManager::EndRound()
 {
 	UE_LOG(LogTemp, Warning, TEXT("EndRound"));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Round %d is ending"), CurrentRound));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, FString::Printf(TEXT("Round %d is ending"), CurrentRound));
 	CurrentRound++;
 
 	if (CurrentRound >= RoundNames.Num()) { CurrentRound--; EndMap(); }
@@ -221,7 +236,7 @@ void AMapManager::EndRound()
 void AMapManager::EndMap()
 {
 	UE_LOG(LogTemp, Warning, TEXT("EndMap"));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Map is ending")));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, FString::Printf(TEXT("Map is ending")));
 }
 
 void AMapManager::CheckEndRound()

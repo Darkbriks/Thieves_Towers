@@ -5,10 +5,32 @@
 #include "Blueprint/UserWidget.h"
 #include "CardHandWidget.generated.h"
 
+class UButton;
 class ACardEffect;
 struct FCardInfo;
 class UOverlay;
 class UCardWidget;
+
+USTRUCT(Blueprintable)
+struct FCardHandParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand Params")
+	double ArcLength = 400.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand Params")
+	double ArcHeight = 50.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand Params")
+	double CardAngle = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand Params")
+	float XOffset = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand Params")
+	float YOffset = 0.0f;
+};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCardPlayed, int, CardIndex, TArray<ACardEffect*>, CardEffects);
 
@@ -17,6 +39,11 @@ class THIEVESTOWERS_API UCardHandWidget : public UUserWidget, public ICardHandIn
 {
 	GENERATED_BODY()
 
+	bool bCanValidateDeck = false;
+	bool bIsPlaying = false;
+
+	int MaxHandSize;
+	
 	UPROPERTY()
 	TArray<UCardWidget*> CardWidgets;
 
@@ -32,32 +59,39 @@ class THIEVESTOWERS_API UCardHandWidget : public UUserWidget, public ICardHandIn
 	UPROPERTY()
 	TArray<ACardEffect*> CardEffects;
 
+	static double ArcInterpolation(const double X, const double Y, double T);
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UOverlay* CardHandOverlay;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
+	UPROPERTY(meta = (BindWidget))
+	UButton* ValidateDeckButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes - Card Hand")
     TSubclassOf<UCardWidget> CardWidgetClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
-	float CardAngle = 5.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes - Card Hand")
+	FCardHandParams ValidatingState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes - Card Hand")
+	FCardHandParams PlayingState;
+
+	FCardHandParams* CurrentState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
-	float XArcRadius = 500.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
-	float YArcRadius = 500.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Hand - Attributes")
-	float ZOffset = -550.0f;
+	FWidgetTransform StartTransform;
 
 	virtual void NativeConstruct() override;
 
-	int GetIndexFromCenter(int Index);
-	FVector2D GetCenterPosition();
-	float GetCardXPosition(int Index);
-	float GetCardYPosition(int Index);
-	float GetCardAngle(int Index);
+	int GetIndexFromCenter(const int Index) const;
+	FVector2D GetCenterPosition() const;
+	float GetCardXPosition(const int Index);
+	float GetCardYPosition(const int Index);
+	float GetCardAngle(const int Index) const;
+
+	UFUNCTION(BlueprintCallable)
+	void OnValidateDeckButtonClicked();
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateCardPositions();
@@ -89,6 +123,9 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnCardPlayed OnCardPlayed;
+
+	void CanValidateDeck();
+	void CanPlay();
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void AddCardToHand(FCardInfo NewCard);

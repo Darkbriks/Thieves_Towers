@@ -32,6 +32,11 @@ class THIEVESTOWERS_API AMapManager : public AActor
 
 	TArray<AWaveGenerator*> CurrentRoundWaves;
 
+	UPROPERTY()
+	UCardHandWidget* W_CardHand;
+
+	float InitialCardDrawDelay = 0.5f;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MapManager - Attributes")
 	int MaxHandSize = 5;
@@ -92,7 +97,7 @@ protected:
 	void RemoveCardFromHand(int CardIndex);
 	void AddCardToDeck(FCardInfo Card, const int Position = -1);
 	void RemoveCardFromDeck(int CardIndex);
-	void PopulateHand();
+	void PopulateHand(bool bUseDelay = false, float Delay = 0.0f);
 	void PopulateDeck();
 
 	UFUNCTION()

@@ -3,6 +3,7 @@
 #include "Cards/Effects/CardEffect.h"
 #include "Manager/GA_ThievesTowers.h"
 #include "Components/Overlay.h"
+#include "Components/Button.h"
 
 void UCardHandWidget::NativeConstruct()
 {
@@ -16,36 +17,76 @@ void UCardHandWidget::NativeConstruct()
 			MapManager->OnAddCardToHand.AddDynamic(this, &UCardHandWidget::AddCard);
 			MapManager->OnRemoveCardFromHand.AddDynamic(this, &UCardHandWidget::RemoveCard);
 			MapManager->BindCardHandWidgetDelegate(this);
+
+			ValidateDeckButton->OnClicked.AddDynamic(this, &UCardHandWidget::OnValidateDeckButtonClicked);
+			ValidateDeckButton->SetVisibility(ESlateVisibility::Hidden);
+
+			CurrentState = &ValidatingState;
+
+			MaxHandSize = MapManager->GetMaxHandSize();
 		}
 	}
 }
 
-int UCardHandWidget::GetIndexFromCenter(int Index)
+double UCardHandWidget::ArcInterpolation(const double X, const double Y, double T)
+{
+	// Assurer que t reste dans l'intervalle [0, x]
+	if (T < 0.0) T = 0.0;
+	if (T > X) T = X;
+
+	// Calcul de la position sur l'arc de cercle
+	double theta = (T / X) * PI; // Angle de l'arc au point t
+	double result = Y * std::sin(theta); // Hauteur de l'arc au point t
+
+	return result;
+}
+
+int UCardHandWidget::GetIndexFromCenter(const int Index) const
 {
 	if (CardHandOverlay == nullptr) { return 0; }
 	if (CardWidgets.Num() == 1) { return 0; }
 	return FMath::Lerp(-(CardWidgets.Num() - 1), CardWidgets.Num() - 1, Index / static_cast<float>(CardWidgets.Num() - 1));
 }
 
-FVector2D UCardHandWidget::GetCenterPosition()
+FVector2D UCardHandWidget::GetCenterPosition() const
 {
 	if (CardHandOverlay == nullptr) { return FVector2D(); }
 	return CardHandOverlay->GetCachedGeometry().GetLocalSize() / 2.0f;
 }
 
-float UCardHandWidget::GetCardXPosition(int Index)
+float UCardHandWidget::GetCardXPosition(const int Index)
 {
 	if (CardHandOverlay == nullptr) { return 0.0f; }
-	return GetCenterPosition().X + XArcRadius * FMath::Sin(FMath::DegreesToRadians(GetCardAngle(Index))) - CardWidgets[Index]->GetCardSize().X / 2.0f;
+	if (CardWidgets.Num() == 1) { return GetCenterPosition().X - (CardWidgets[Index]->GetCardSize().X / 2.0f); }
+	const double Length = CurrentState->ArcLength * (CardWidgets.Num() / static_cast<double>(MaxHandSize));
+	return GetCenterPosition().X - (Length / 2.0f) + (Index / static_cast<double>(CardWidgets.Num() - 1)) * Length - CardWidgets[Index]->GetCardSize().X / 2.0f;
 }
 
-float UCardHandWidget::GetCardYPosition(int Index)
+float UCardHandWidget::GetCardYPosition(const int Index)
 {
 	if (CardHandOverlay == nullptr) { return 0.0f; }
-	return GetCenterPosition().Y - YArcRadius * FMath::Cos(FMath::DegreesToRadians(GetCardAngle(Index))) - CardWidgets[Index]->GetCardSize().Y / 2.0f - ZOffset;
+	double InterpIndex = 0.0;
+	if (CardWidgets.Num() > 1) { InterpIndex = (Index / static_cast<double>(CardWidgets.Num() - 1)) * CurrentState->ArcLength; }
+	const double Height = CurrentState->ArcHeight * (CardWidgets.Num() / static_cast<double>(MaxHandSize));
+	return GetCenterPosition().Y - ArcInterpolation(CurrentState->ArcLength, Height, InterpIndex) - CardWidgets[Index]->GetCardSize().Y / 2.0f - CurrentState->YOffset;
 }
 
-float UCardHandWidget::GetCardAngle(int Index) { return GetIndexFromCenter(Index) * CardAngle; }
+float UCardHandWidget::GetCardAngle(const int Index) const { return GetIndexFromCenter(Index) * CurrentState->CardAngle; }
+
+void UCardHandWidget::OnValidateDeckButtonClicked()
+{
+	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+	{
+		
+		if (AMapManager* MapManager = GameInstance->GetMapManager())
+		{
+			MapManager->InitRound();
+			this->CanPlay();
+			ValidateDeckButton->RemoveFromParent();
+			ValidateDeckButton->ConditionalBeginDestroy();
+		}
+	}
+}
 
 void UCardHandWidget::UpdateCardPositions()
 {
@@ -65,20 +106,20 @@ void UCardHandWidget::UpdateCardPositions()
 
 void UCardHandWidget::OnCardHovered(UCardWidget* HoveredCard)
 {
-	if (CardHandOverlay == nullptr) { return; }
+	if (CardHandOverlay == nullptr || !bIsPlaying) { return; }
 	HoveredCardIndex = CardWidgets.Find(HoveredCard);
 	UpdateCardPositions();
 }
 
 void UCardHandWidget::OnCardUnhovered(UCardWidget* UnhoveredCard)
 {
-	if (CardHandOverlay == nullptr) { return; }
+	if (CardHandOverlay == nullptr || !bIsPlaying) { return; }
 	if (HoveredCardIndex == CardWidgets.Find(UnhoveredCard)) { HoveredCardIndex = -1; UpdateCardPositions(); }
 }
 
 void UCardHandWidget::OnCardDragged(UCardWidget* DraggedCard)
 {
-	if (CardHandOverlay == nullptr) { return; }
+	if (CardHandOverlay == nullptr || !bIsPlaying) { return; }
 	this->DraggedCardReferance = DraggedCard;
 
 	TArray<TSubclassOf<ACardEffect>> Effects = DraggedCard->GetCardInfo().GetEffects();
@@ -93,20 +134,20 @@ void UCardHandWidget::OnCardDragged(UCardWidget* DraggedCard)
 
 void UCardHandWidget::OnCardDragCancelled(UCardWidget* CancelDraggedCard, bool bDragIsCancelled)
 {
-	if (CardHandOverlay == nullptr || bDragIsCancelled) { for (ACardEffect* CardEffect : CardEffects) { CardEffect->CancelEffect(); } return; }
+	if (CardHandOverlay == nullptr || !bIsPlaying || bDragIsCancelled) { for (ACardEffect* CardEffect : CardEffects) { CardEffect->CancelEffect(); } return; }
 	if (DraggedCardReferance == CancelDraggedCard) { DraggedCardReferance = nullptr; }
 	OnCardPlayed.Broadcast(CardWidgets.Find(CancelDraggedCard), CardEffects);
 }
 
 void UCardHandWidget::OnCardDragEnter(UCardWidget* HoveredCard)
 {
-	if (CardHandOverlay == nullptr) { return; }
+	if (CardHandOverlay == nullptr || !bIsPlaying) { return; }
 	DragHoveredCard = HoveredCard;
 }
 
 void UCardHandWidget::OnCardDragLeave(UCardWidget* UnhoveredCard)
 {
-	if (CardHandOverlay == nullptr) { return; }
+	if (CardHandOverlay == nullptr || !bIsPlaying) { return; }
 	if (DragHoveredCard == UnhoveredCard) { DragHoveredCard = nullptr; }
 }
 
@@ -118,6 +159,7 @@ void UCardHandWidget::AddCard(FCardInfo Card)
 	NewCard->SetCardInfo(Card);
 	CardHandOverlay->AddChild(NewCard);
 	CardWidgets.Add(NewCard);
+	NewCard->SetRenderTransform(StartTransform);
 	
 	NewCard->OnHoverCard.AddDynamic(this, &UCardHandWidget::OnCardHovered);
 	NewCard->OnUnhoverCard.AddDynamic(this, &UCardHandWidget::OnCardUnhovered);
@@ -137,5 +179,21 @@ void UCardHandWidget::RemoveCard(int Index)
 	CardHandOverlay->RemoveChild(CardWidgets[Index]);
 	CardWidgets.RemoveAt(Index);
 	
+	UpdateCardPositions();
+}
+
+void UCardHandWidget::CanValidateDeck()
+{
+	if (bCanValidateDeck || bIsPlaying) { return; }
+	bCanValidateDeck = true;
+	ValidateDeckButton->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UCardHandWidget::CanPlay()
+{
+	if (!bCanValidateDeck || bIsPlaying) { return; }
+	bCanValidateDeck = false;
+	bIsPlaying = true;
+	CurrentState = &PlayingState;
 	UpdateCardPositions();
 }
