@@ -36,7 +36,7 @@ AEnemy* ATower::GetEnemyInRange()
 	{
 		TargetingMode = NewObject<UTargetingMode>(this, TargetingModeClass);
 	}
-	return TargetingMode->GetEnemy(EnemiesInRange);
+	return TargetingMode->GetEnemy(EnemiesInRange, this);
 }
 
 void ATower::Anim(float DeltaTime)

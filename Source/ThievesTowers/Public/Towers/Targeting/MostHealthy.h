@@ -3,15 +3,17 @@
 #include "CoreMinimal.h"
 #include "Towers/Targeting/TargetingMode.h"
 #include "Enemy/Enemy.h"
-#include "MostHealtly.generated.h"
+#include "MostHealthy.generated.h"
 
 UCLASS()
-class THIEVESTOWERS_API UMostHealtly : public UTargetingMode
+class THIEVESTOWERS_API UMostHealthy : public UTargetingMode
 {
 	GENERATED_BODY()
 
 public:
-	virtual AEnemy* GetEnemy(TArray<AEnemy*> EnemiesInRange) const override
+	virtual FName GetTargetingModeName() const override { return "Most Healthy"; }
+	
+	virtual AEnemy* GetEnemy(TArray<AEnemy*> EnemiesInRange, APrimitiveTower* Tower) const override
 	{
 		AEnemy* MostHealtlyEnemy = nullptr;
 		

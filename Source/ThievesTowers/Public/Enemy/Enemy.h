@@ -108,6 +108,7 @@ public:
 	float GetCurrentPathDistance() const { return CurrentPathDistance; }
 	float GetTraveledDistance() const { return TraveledDistance; }
 	float GetTotalDistance() const { return TotalDistance; }
+	float GetRemainingDistance() const { return TotalDistance - TraveledDistance; }
 	APath* GetCurrentPath() const { return CurrentPath; }
 
 	TArray<AProjectile*> GetProjectiles() const { return Projectiles; }
