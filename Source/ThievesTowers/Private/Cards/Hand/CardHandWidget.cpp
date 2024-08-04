@@ -73,21 +73,6 @@ float UCardHandWidget::GetCardYPosition(const int Index)
 
 float UCardHandWidget::GetCardAngle(const int Index) const { return GetIndexFromCenter(Index) * CurrentState->CardAngle; }
 
-void UCardHandWidget::OnValidateDeckButtonClicked()
-{
-	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
-	{
-		
-		if (AMapManager* MapManager = GameInstance->GetMapManager())
-		{
-			MapManager->InitRound();
-			this->CanPlay();
-			ValidateDeckButton->RemoveFromParent();
-			ValidateDeckButton->ConditionalBeginDestroy();
-		}
-	}
-}
-
 void UCardHandWidget::UpdateCardPositions()
 {
 	if (CardHandOverlay == nullptr) { return; }
@@ -102,6 +87,41 @@ void UCardHandWidget::UpdateCardPositions()
 
 		CardWidgets[i]->StartMoving(NewTransform);
 	}
+}
+
+void UCardHandWidget::OnValidateDeckButtonClicked()
+{
+	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+	{
+		
+		if (AMapManager* MapManager = GameInstance->GetMapManager())
+		{
+			bCanValidateDeck = false; bIsPlaying = true;
+			ValidateDeckButton->RemoveFromParent();
+			ValidateDeckButton->ConditionalBeginDestroy();
+
+			if (ThrowAwayCardIndex != -1) { MapManager->ReplaceCardInHand(ThrowAwayCardIndex); }
+
+			FTimerHandle TimerHandle; FTimerDelegate TimerDelegate;
+			TimerDelegate.BindLambda([this, MapManager]()
+			{
+				CurrentState = &PlayingState;
+				UpdateCardPositions();
+				MapManager->InitRound();
+			});
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, ThrowAwayCardIndex != -1 ? ValidationDelay : 0.01f, false);
+		}
+	}
+}
+
+void UCardHandWidget::OnCardClicked(UCardWidget* ClickedCard)
+{
+	if (CardHandOverlay == nullptr || !bCanValidateDeck) { return; }
+	const int Index = CardWidgets.Find(ClickedCard);
+	if (ThrowAwayCardIndex == -1) { ThrowAwayCardIndex = Index; ClickedCard->PrepareToDelete(); }
+	else if (ThrowAwayCardIndex == Index) { ThrowAwayCardIndex = -1; ClickedCard->CancelDelete(); }
+	else { CardWidgets[ThrowAwayCardIndex]->CancelDelete(); ThrowAwayCardIndex = Index; ClickedCard->PrepareToDelete(); }
+	
 }
 
 void UCardHandWidget::OnCardHovered(UCardWidget* HoveredCard)
@@ -160,7 +180,9 @@ void UCardHandWidget::AddCard(FCardInfo Card)
 	CardHandOverlay->AddChild(NewCard);
 	CardWidgets.Add(NewCard);
 	NewCard->SetRenderTransform(StartTransform);
-	
+	NewCard->SetCardHandWidget(this);
+
+	NewCard->OnClickedCard.AddDynamic(this, &UCardHandWidget::OnCardClicked);
 	NewCard->OnHoverCard.AddDynamic(this, &UCardHandWidget::OnCardHovered);
 	NewCard->OnUnhoverCard.AddDynamic(this, &UCardHandWidget::OnCardUnhovered);
 	NewCard->OnDragCard.AddDynamic(this, &UCardHandWidget::OnCardDragged);
@@ -187,13 +209,4 @@ void UCardHandWidget::CanValidateDeck()
 	if (bCanValidateDeck || bIsPlaying) { return; }
 	bCanValidateDeck = true;
 	ValidateDeckButton->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UCardHandWidget::CanPlay()
-{
-	if (!bCanValidateDeck || bIsPlaying) { return; }
-	bCanValidateDeck = false;
-	bIsPlaying = true;
-	CurrentState = &PlayingState;
-	UpdateCardPositions();
 }

@@ -48,9 +48,6 @@ class THIEVESTOWERS_API UCardHandWidget : public UUserWidget, public ICardHandIn
 	TArray<UCardWidget*> CardWidgets;
 
 	UPROPERTY()
-	int HoveredCardIndex = -1;
-
-	UPROPERTY()
 	UCardWidget* DraggedCardReferance = nullptr;
 
 	UPROPERTY()
@@ -68,6 +65,12 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* ValidateDeckButton;
 
+	UPROPERTY(BlueprintReadOnly)
+	int HoveredCardIndex = -1;
+
+	UPROPERTY(BlueprintReadOnly)
+	int ThrowAwayCardIndex = -1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes - Card Hand")
     TSubclassOf<UCardWidget> CardWidgetClass;
 
@@ -76,6 +79,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes - Card Hand")
 	FCardHandParams PlayingState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes - Card Hand")
+	float ValidationDelay = 1.0f;
 
 	FCardHandParams* CurrentState;
 
@@ -95,6 +101,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateCardPositions();
+
+	UFUNCTION(BlueprintCallable)
+	void OnCardClicked(UCardWidget* ClickedCard);
 
 	UFUNCTION(BlueprintCallable)
 	void OnCardHovered(UCardWidget* HoveredCard);
@@ -125,7 +134,7 @@ public:
 	FOnCardPlayed OnCardPlayed;
 
 	void CanValidateDeck();
-	void CanPlay();
+	bool GetIsPlaying() const { return bIsPlaying; }
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void AddCardToHand(FCardInfo NewCard);

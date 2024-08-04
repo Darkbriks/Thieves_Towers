@@ -143,6 +143,18 @@ void AMapManager::AddCardToHand(TSubclassOf<UCard> Card, int NumberOfCards, TEnu
 	}
 }
 
+void AMapManager::ReplaceCardInHand(const int CardIndex)
+{
+	if (CardIndex < 0 || CardIndex >= Hand.Num()) { return; }
+	
+	CardDiscard.Add(Hand[CardIndex]);
+	Hand.RemoveAt(CardIndex);
+	OnRemoveCardFromHand.Broadcast(CardIndex);
+
+	AddCardToHand(CardDeck[0]); RemoveCardFromDeck(0);
+}
+
+
 void AMapManager::InitDeck()
 {
 	UDeck* PlayerDeckObject = PlayerDeck->GetDefaultObject<UDeck>();

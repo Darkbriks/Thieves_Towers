@@ -167,6 +167,7 @@ public:
 
 	void AddCardToDeck(TSubclassOf<UCard> Card, int NumberOfCards = 1, TEnumAsByte<EInsertionType> InsertionType = EInsertionType::END, bool bShuffle = false);
 	void AddCardToHand(TSubclassOf<UCard> Card, int NumberOfCards = 1, TEnumAsByte<EInsertionType> InsertionType = EInsertionType::END);
+	void ReplaceCardInHand(const int CardIndex);
 
 	// Methods
 	UFUNCTION(BlueprintCallable)

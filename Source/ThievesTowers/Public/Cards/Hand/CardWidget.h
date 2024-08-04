@@ -6,8 +6,10 @@
 #include "Components/Image.h"
 #include "CardWidget.generated.h"
 
+class UCardHandWidget;
 class UCardWidget;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClickedCard, UCardWidget*, ClickedCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHoverCard, UCardWidget*, HoveredCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnhoverCard, UCardWidget*, UnhoveredCard);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDragCard, UCardWidget*, DraggedCard);
@@ -22,6 +24,9 @@ class THIEVESTOWERS_API UCardWidget : public UUserWidget
 
 	FWidgetTransform TargetTransform;
 	bool bIsMoving = false;
+
+	UPROPERTY()
+	UCardHandWidget* CardHandWidget;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes", meta = (ExposeOnSpawn = true))
@@ -41,6 +46,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
 	float DraggableOpacity = 0.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
+	float DeleteOpacity = 0.25f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card - Attributes")
 	float InterpolationSpeed = 15.0f;
@@ -53,6 +61,7 @@ protected:
 
 	virtual void NativeConstruct() override;
 
+	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
@@ -64,6 +73,9 @@ protected:
 	
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FOnClickedCard OnClickedCard;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnHoverCard OnHoverCard;
 
@@ -85,7 +97,16 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
+	void SetCardHandWidget(UCardHandWidget* NewCardHandWidget) { CardHandWidget = NewCardHandWidget; }
+	
+	UFUNCTION(BlueprintCallable)
 	void StartMoving(FWidgetTransform NewTransform);
+
+	UFUNCTION(BlueprintCallable)
+	void PrepareToDelete();
+
+	UFUNCTION(BlueprintCallable)
+	void CancelDelete();
 
 	UFUNCTION(BlueprintCallable)
 	FCardInfo GetCardInfo() { return CardInfo; }

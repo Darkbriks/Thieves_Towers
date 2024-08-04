@@ -3,6 +3,8 @@
 #include "Components/Image.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
+#include "Cards/Hand/CardHandWidget.h"
+
 //////////////////////////////////////////////////////////////////////////
 /// UCardWidget - Protected
 //////////////////////////////////////////////////////////////////////////
@@ -16,8 +18,15 @@ void UCardWidget::NativeConstruct()
 	}
 }
 
+FReply UCardWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && !CardHandWidget->GetIsPlaying()) { OnClickedCard.Broadcast(this); return FReply::Handled(); }
+	return FReply::Unhandled();
+}
+
 FReply UCardWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	if (InMouseEvent.GetEffectingButton() != EKeys::LeftMouseButton || !CardHandWidget->GetIsPlaying()) { return FReply::Handled(); }
 	FEventReply Reply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 	return Reply.NativeReply;
 }
@@ -75,4 +84,14 @@ void UCardWidget::StartMoving(FWidgetTransform NewTransform)
 {
 	TargetTransform = NewTransform;
 	bIsMoving = true;
+}
+
+void UCardWidget::PrepareToDelete()
+{
+	this->SetRenderOpacity(DeleteOpacity);
+}
+
+void UCardWidget::CancelDelete()
+{
+	this->SetRenderOpacity(1.0f);
 }
