@@ -1,5 +1,5 @@
-#include "Manager/GA_ThievesTowers.h"
 #include "Manager/MapManager.h"
+#include "Manager/GA_ThievesTowers.h"
 #include "Cards/Card.h"
 #include "Cards/Deck.h"
 #include "Cards/CardInfo.h"
