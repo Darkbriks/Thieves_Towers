@@ -3,6 +3,9 @@
 #include "CoreMinimal.h"
 #include "PrimitiveTower.h"
 #include "Towers/Targeting/FirstEnemyInRange.h"
+#include "Towers/Targeting/LastEnemyInRange.h"
+#include "Towers/Targeting/Closer.h"
+#include "Towers/Targeting/Further.h"
 #include "GameFramework/Actor.h"
 #include "Tower.generated.h"
 
@@ -38,9 +41,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
 	TSubclassOf<AProjectile> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
-    TSubclassOf<UTargetingMode> TargetingModeClass = UFirstEnemyInRange::StaticClass();
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
+    //TSubclassOf<UTargetingMode> CurrentTargetingModeClass = UFirstEnemyInRange::StaticClass();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
+	TArray<TSubclassOf<UTargetingMode>> TargetingModes = {
+		UFirstEnemyInRange::StaticClass(),
+		ULastEnemyInRange::StaticClass(),
+		UCloser::StaticClass(),
+		UFurther::StaticClass()
+	};
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
 	float AttackSpeed = 1.0f;
 
@@ -83,4 +94,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void Deactivate() override;
+
+	virtual TArray<TSubclassOf<UTargetingMode>> GetTargetingModes() { return TargetingModes; }
+	virtual TSubclassOf<UTargetingMode> GetCurrentTargetingMode() { return TargetingMode->GetClass(); }
+	virtual void SetTargetingMode(const TSubclassOf<UTargetingMode> InTargetingMode);
 };

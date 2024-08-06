@@ -1,8 +1,10 @@
 #include "Towers/Tower.h"
+#include "Towers/TowerWidget.h"
 #include "Towers/Targeting/TargetingMode.h"
-#include "Components/CapsuleComponent.h"
 #include "Enemy/Enemy.h"
 #include "Projectiles/Projectile.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -34,7 +36,7 @@ AEnemy* ATower::GetEnemyInRange()
 {
 	if (TargetingMode == nullptr)
 	{
-		TargetingMode = NewObject<UTargetingMode>(this, TargetingModeClass);
+		TargetingMode = NewObject<UTargetingMode>(this, TargetingModes[0]);
 	}
 	return TargetingMode->GetEnemy(EnemiesInRange, this);
 }
@@ -105,6 +107,9 @@ void ATower::BeginPlay()
 	AnimationOverflow = AttackAnimation->GetTotalDuration() - ProjectileLaunchTime;
 	FlipbookComponent->SetFlipbook(IdleAnimation);
 
+	Widget = Cast<UPrimitiveTowerWidget>(WidgetComponent->GetUserWidgetObject());
+	Widget->SetTower(this);
+
 	Activate();
 }
 
@@ -142,4 +147,9 @@ void ATower::Deactivate()
 	AttackCooldown = 0.0f;
 	AnimationCooldown = 0.0f;
 	AnimationOverflow = 0.0f;
+}
+
+void ATower::SetTargetingMode(const TSubclassOf<UTargetingMode> NewTargetingMode)
+{
+	TargetingMode = NewObject<UTargetingMode>(this, NewTargetingMode);
 }

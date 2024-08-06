@@ -5,8 +5,10 @@
 #include "GameFramework/Actor.h"
 #include "PrimitiveTower.generated.h"
 
+class UPrimitiveTowerWidget;
 class UCapsuleComponent;
 class USphereComponent;
+class UWidgetComponent;
 
 UCLASS()
 class THIEVESTOWERS_API APrimitiveTower : public AActor
@@ -22,8 +24,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* SphereComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tower - Components", meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* WidgetComponent;
 	
 	bool bIsActivated = true;
+
+	UPROPERTY()
+	UPrimitiveTowerWidget* Widget;
 
 	TArray<TEnumAsByte<ETypeOfDamage>> AdditionalTypesOfDamage;
 
