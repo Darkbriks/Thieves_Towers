@@ -18,7 +18,6 @@ void UMainHUD::NativeConstruct()
 		CardHand->OnDeckValidated.AddDynamic(this, &UMainHUD::OnDeckValidated);
 
 		WaveButton->OnClicked.AddDynamic(this, &UMainHUD::OnWaveButtonClicked);
-		OptionsButton->OnClicked.AddDynamic(this, &UMainHUD::OnOptionsButtonClicked);
 		PlayButton->OnClicked.AddDynamic(this, &UMainHUD::OnPlayButtonClicked);
 
 		HeroNameField->SetText(FText::FromName(MapManager->GetHeroName()));
@@ -35,13 +34,6 @@ void UMainHUD::OnWaveButtonClicked()
 	if (MapManager != nullptr) { MapManager->StartRound(); }
 }
 
-void UMainHUD::OnOptionsButtonClicked()
-{
-	// TODO: Implement Options Menu
-	// In the meantime, quit the game
-	FGenericPlatformMisc::RequestExit(false, TEXT("LOG: Quitting the game by pressing the Options button."));
-}
-
 void UMainHUD::OnPlayButtonClicked()
 {
 	if (MapManager != nullptr)
@@ -50,12 +42,6 @@ void UMainHUD::OnPlayButtonClicked()
 		PlayButton->RemoveFromParent();
 		PlayButton = nullptr;
 	}
-}
-
-FText UMainHUD::GetRoundText() const
-{
-	//if (MapManager != nullptr) { return FText::Format(TEXT("{0} - {1}") , MapManager->GetMapName(), MapManager->GetRoundName())); }
-	return FText();
 }
 
 FText UMainHUD::GetLifeText() const

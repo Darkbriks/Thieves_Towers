@@ -15,10 +15,10 @@ class THIEVESTOWERS_API UMainHUD : public UUserWidget
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	AMapManager* MapManager;
-
 protected:
+
+	UPROPERTY(BlueprintReadOnly, Category = "MainHUD - Attributes")
+	AMapManager* MapManager;
 
 	////////// Top Bar //////////
 	UPROPERTY(meta = (BindWidget))
@@ -76,15 +76,9 @@ protected:
 	virtual void OnWaveButtonClicked();
 
 	UFUNCTION()
-	virtual void OnOptionsButtonClicked();
-
-	UFUNCTION()
 	virtual void OnPlayButtonClicked();
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
-	FText GetRoundText() const;
-
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
 	FText GetLifeText() const;
 
