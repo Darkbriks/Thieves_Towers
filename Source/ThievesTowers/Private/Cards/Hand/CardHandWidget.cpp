@@ -107,6 +107,7 @@ void UCardHandWidget::OnValidateDeckButtonClicked()
 			{
 				CurrentState = &PlayingState;
 				UpdateCardPositions();
+				OnDeckValidated.Broadcast();
 				MapManager->InitRound();
 			});
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, ThrowAwayCardIndex != -1 ? ValidationDelay : 0.01f, false);

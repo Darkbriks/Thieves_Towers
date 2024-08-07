@@ -35,6 +35,9 @@ class THIEVESTOWERS_API AMapManager : public AActor
 	UPROPERTY()
 	UCardHandWidget* W_CardHand;
 
+	UPROPERTY()
+	TSoftObjectPtr<UCardHandWidget> CardHandWidgetClass;
+
 	float InitialCardDrawDelay = 0.5f;
 
 protected:

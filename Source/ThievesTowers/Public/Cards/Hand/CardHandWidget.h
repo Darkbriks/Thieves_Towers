@@ -11,6 +11,8 @@ struct FCardInfo;
 class UOverlay;
 class UCardWidget;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeckValidated);
+
 USTRUCT(Blueprintable)
 struct FCardHandParams
 {
@@ -130,6 +132,9 @@ protected:
 	void RemoveCard(int Index);
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FOnDeckValidated OnDeckValidated;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnCardPlayed OnCardPlayed;
 
