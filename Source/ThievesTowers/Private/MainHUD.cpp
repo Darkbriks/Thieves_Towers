@@ -2,10 +2,10 @@
 #include "Cards/Hand/CardHandWidget.h"
 #include "Manager/GA_ThievesTowers.h"
 #include "Manager/MapManager.h"
+#include "Towers/TowerWidget.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
-#include "UMG.h"
 
 void UMainHUD::NativeConstruct()
 {
@@ -14,6 +14,7 @@ void UMainHUD::NativeConstruct()
 	if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{
 		MapManager = GameInstance->GetMapManager();
+		MapManager->SetMainHUD(this);
 
 		CardHand->OnDeckValidated.AddDynamic(this, &UMainHUD::OnDeckValidated);
 
@@ -22,11 +23,13 @@ void UMainHUD::NativeConstruct()
 
 		HeroNameField->SetText(FText::FromName(MapManager->GetHeroName()));
 	}
+
+	TowerWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UMainHUD::OnDeckValidated()
 {
-	if (CardSelectionBackgroundFadeOut != nullptr) { PlayAnimation(CardSelectionBackgroundFadeOut); }
+	if (BackgroundFadeOut != nullptr) { PlayAnimation(BackgroundFadeOut); }
 }
 
 void UMainHUD::OnWaveButtonClicked()
@@ -64,12 +67,28 @@ FText UMainHUD::GetManaText() const
 
 FText UMainHUD::GetDrawText() const
 {
-	if (MapManager != nullptr) { return FText::FromString(FString::FromInt(MapManager->GetMaxHandSize())); }
+	if (MapManager != nullptr) { return FText::FromString(FString::FromInt(MapManager->GetCardDeck().Num())); }
 	return FText();
 }
 
 FText UMainHUD::GetDiscardText() const
 {
-	if (MapManager != nullptr) { return FText::FromString(FString::FromInt(MapManager->GetMaxHandSize())); }
+	if (MapManager != nullptr) { return FText::FromString(FString::FromInt(MapManager->GetCardDiscard().Num())); }
 	return FText();
+}
+
+void UMainHUD::TowerSelected(APrimitiveTower* InTower) const
+{
+	if (InTower == nullptr) { return; }
+	TowerWidget->SetTower(InTower);
+	TowerWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UMainHUD::TowerDeselected(APrimitiveTower* InTower) const
+{
+	if (InTower == TowerWidget->GetTower())
+	{
+		TowerWidget->SetTower(nullptr);
+		TowerWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

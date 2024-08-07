@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "MainHUD.generated.h"
 
+class UTowerWidget;
+class APrimitiveTower;
 class AMapManager;
 class UCardHandWidget;
 class USizeBox;
@@ -50,6 +52,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* DiscardField;
 
+	UPROPERTY(meta = (BindWidget))
+	UTowerWidget* TowerWidget;
+
 	////////// Other //////////
 	UPROPERTY(meta = (BindWidget))
 	UButton* PlayButton;
@@ -60,8 +65,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	USizeBox* CardSelectionBackground;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MainHUD - Attributes")
-	UWidgetAnimation* CardSelectionBackgroundFadeOut;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* BackgroundFadeOut;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainHUD - Attributes")
 	float CardSelectionBackgroundFadeOutSpeed = 0.5f;
@@ -93,4 +98,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
 	FText GetDiscardText() const;
+
+	void TowerSelected(APrimitiveTower* InTower) const;
+	void TowerDeselected(APrimitiveTower* InTower) const;
 };

@@ -13,29 +13,40 @@ void UTowerWidget::NativeConstruct()
 
 void UTowerWidget::SetTower(APrimitiveTower* InTower)
 {
+	PreviousTargetingModeButton->SetVisibility(ESlateVisibility::Hidden);
+	NextTargetingModeButton->SetVisibility(ESlateVisibility::Hidden);
+	CurrentTargetingModeName->SetVisibility(ESlateVisibility::Hidden);
+
+	if (!InTower) { PrimitiveTower = nullptr; Tower = nullptr; return; }
+	
+	PrimitiveTower = InTower;
+	TowerName->SetText(FText::FromString(PrimitiveTower->GetName()));
+	
 	Tower = Cast<ATower>(InTower);
 	if (Tower)
 	{
 		TargetingModes = Tower->GetTargetingModes();
-		CurrentTargetingModeIndex = 0;
+		CurrentTargetingModeIndex = TargetingModes.Find(Tower->GetCurrentTargetingMode());
+		if (CurrentTargetingModeIndex == INDEX_NONE)
+		{
+			CurrentTargetingModeIndex = 0;
+			Tower->SetTargetingMode(TargetingModes[CurrentTargetingModeIndex]);
+		}
+		
 		CurrentTargetingModeName->SetText(FText::FromString(TargetingModes[CurrentTargetingModeIndex]->GetName()));
-
+		CurrentTargetingModeName->SetVisibility(ESlateVisibility::Visible);
+		
 		if (TargetingModes.Num() > 1)
 		{
 			PreviousTargetingModeButton->SetVisibility(ESlateVisibility::Visible);
 			NextTargetingModeButton->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			PreviousTargetingModeButton->SetVisibility(ESlateVisibility::Hidden);
-			NextTargetingModeButton->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
 
 void UTowerWidget::OnPreviousTargetingModeButtonClicked()
 {
-	if (Tower && TargetingModes.Num() > 0)
+	if (Tower && TargetingModes.Num() > 1)
 	{
 		CurrentTargetingModeIndex = (CurrentTargetingModeIndex - 1 + TargetingModes.Num()) % TargetingModes.Num();
 		Tower->SetTargetingMode(TargetingModes[CurrentTargetingModeIndex]);
@@ -45,7 +56,7 @@ void UTowerWidget::OnPreviousTargetingModeButtonClicked()
 
 void UTowerWidget::OnNextTargetingModeButtonClicked()
 {
-	if (Tower && TargetingModes.Num() > 0)
+	if (Tower && TargetingModes.Num() > 1)
 	{
 		CurrentTargetingModeIndex = (CurrentTargetingModeIndex + 1) % TargetingModes.Num();
 		Tower->SetTargetingMode(TargetingModes[CurrentTargetingModeIndex]);

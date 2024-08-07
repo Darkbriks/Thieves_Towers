@@ -107,9 +107,6 @@ void ATower::BeginPlay()
 	AnimationOverflow = AttackAnimation->GetTotalDuration() - ProjectileLaunchTime;
 	FlipbookComponent->SetFlipbook(IdleAnimation);
 
-	Widget = Cast<UPrimitiveTowerWidget>(WidgetComponent->GetUserWidgetObject());
-	Widget->SetTower(this);
-
 	Activate();
 }
 
@@ -149,7 +146,7 @@ void ATower::Deactivate()
 	AnimationOverflow = 0.0f;
 }
 
-void ATower::SetTargetingMode(const TSubclassOf<UTargetingMode> NewTargetingMode)
+void ATower::SetTargetingMode(const TSubclassOf<UTargetingMode> InTargetingMode)
 {
-	TargetingMode = NewObject<UTargetingMode>(this, NewTargetingMode);
+	TargetingMode = NewObject<UTargetingMode>(this, InTargetingMode);
 }

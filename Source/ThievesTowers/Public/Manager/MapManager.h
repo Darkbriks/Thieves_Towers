@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "MapManager.generated.h"
 
+class UMainHUD;
 class UCard;
 class UDeck;
 class UCardHandWidget;
@@ -36,7 +37,7 @@ class THIEVESTOWERS_API AMapManager : public AActor
 	UCardHandWidget* W_CardHand;
 
 	UPROPERTY()
-	TSoftObjectPtr<UCardHandWidget> CardHandWidgetClass;
+	UMainHUD* W_MainHUD;
 
 	float InitialCardDrawDelay = 0.5f;
 
@@ -117,6 +118,12 @@ public:
 	void BindCardHandWidgetDelegate(UCardHandWidget* CardHandWidget);
 	
 	// Getters
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UMainHUD* GetMainHUD() { return W_MainHUD; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetMainHUD(UMainHUD* MainHUD) { W_MainHUD = MainHUD; }
+	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetMaxHandSize() { return MaxHandSize; }
 

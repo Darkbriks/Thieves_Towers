@@ -96,6 +96,6 @@ public:
 	virtual void Deactivate() override;
 
 	virtual TArray<TSubclassOf<UTargetingMode>> GetTargetingModes() { return TargetingModes; }
-	virtual TSubclassOf<UTargetingMode> GetCurrentTargetingMode() { return TargetingMode->GetClass(); }
+	virtual TSubclassOf<UTargetingMode> GetCurrentTargetingMode() { return TargetingMode ? TargetingMode->GetClass() : nullptr; }
 	virtual void SetTargetingMode(const TSubclassOf<UTargetingMode> InTargetingMode);
 };

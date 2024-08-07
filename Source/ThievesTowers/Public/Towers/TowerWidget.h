@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PrimitiveTowerWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "TowerWidget.generated.h"
 
 class ATower;
@@ -11,7 +11,7 @@ class UTextBlock;
 class UButton;
 
 UCLASS()
-class THIEVESTOWERS_API UTowerWidget : public UPrimitiveTowerWidget
+class THIEVESTOWERS_API UTowerWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -19,6 +19,9 @@ class THIEVESTOWERS_API UTowerWidget : public UPrimitiveTowerWidget
 	TArray<TSubclassOf<UTargetingMode>> TargetingModes;
 
 protected:
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TowerName;
+	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* CurrentTargetingModeName;
 
@@ -29,15 +32,20 @@ protected:
 	UButton* NextTargetingModeButton;
 
 	UPROPERTY()
+	APrimitiveTower* PrimitiveTower;
+
+	UPROPERTY()
 	ATower* Tower;
 
 	virtual void NativeConstruct() override;
-	
-	virtual void SetTower(APrimitiveTower* InTower) override;
 
 	UFUNCTION()
 	void OnPreviousTargetingModeButtonClicked();
 
 	UFUNCTION()
 	void OnNextTargetingModeButtonClicked();
+
+public:
+	APrimitiveTower* GetTower() const { return PrimitiveTower; }
+	virtual void SetTower(APrimitiveTower* InTower);
 };

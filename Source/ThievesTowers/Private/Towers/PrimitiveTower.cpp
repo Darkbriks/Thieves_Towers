@@ -1,10 +1,8 @@
 #include "Towers/PrimitiveTower.h"
+#include "MainHUD.h"
 #include "Manager/GA_ThievesTowers.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/WidgetComponent.h"
-
-#include "Towers/PrimitiveTowerWidget.h"
 
 APrimitiveTower::APrimitiveTower()
 {
@@ -26,24 +24,18 @@ APrimitiveTower::APrimitiveTower()
 	SphereComponent->SetCollisionProfileName("OverlapAllDynamic");
 	SphereComponent->SetGenerateOverlapEvents(true);
 	SphereComponent->ComponentTags.Add("Tower-Basement");
-
-	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
-	WidgetComponent->SetupAttachment(RootComponent);
-	WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	WidgetComponent->SetDrawSize(FVector2D(300.0f, 500.0f));
 }
 
 void APrimitiveTower::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->AddTower(this); }
-	
+
 	CapsuleComponent->SetCapsuleRadius(Range);
-	
-	Widget = Cast<UPrimitiveTowerWidget>(WidgetComponent->GetUserWidgetObject());
-	Widget->SetTower(this);
-	
+	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+	{
+		GameInstance->AddTower(this);
+		GameInstance->GetMapManager()->GetMainHUD()->TowerSelected(this);
+	}
 	Activate();
 }
 
@@ -53,6 +45,7 @@ void APrimitiveTower::Destroyed()
 	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
 	{
 		GameInstance->RemoveTower(this);
+		GameInstance->GetMapManager()->GetMainHUD()->TowerDeselected(this);
 	}
 }
 
