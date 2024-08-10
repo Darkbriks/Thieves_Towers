@@ -1,13 +1,14 @@
 #include "Towers/Tower.h"
-#include "Towers/TowerWidget.h"
 #include "Towers/Targeting/TargetingMode.h"
 #include "Enemy/Enemy.h"
 #include "Projectiles/Projectile.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
 #include "PaperFlipbook.h"
 #include "PaperFlipbookComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Manager/GA_ThievesTowers.h"
+#include "Manager/MapManager.h"
+#include "MainHUD.h"
 
 //////////////////////////////////////////////////////////////////////////
 /// ATower - Constructor
@@ -20,10 +21,12 @@ ATower::ATower()
 	FlipbookComponent->SetupAttachment(RootComponent);
 	FlipbookComponent->SetFlipbook(IdleAnimation);
 	FlipbookComponent->CastShadow = true;
+	FlipbookComponent->OnClicked.AddDynamic(this, &ATower::OnMouseButtonDown);
 
 	BasementMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BasementMesh"));
 	BasementMesh->SetupAttachment(RootComponent);
 	BasementMesh->SetGenerateOverlapEvents(false);
+	BasementMesh->OnClicked.AddDynamic(this, &ATower::OnMouseButtonDown);
 
 	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ATower::BeginOverlap);
 	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &ATower::EndOverlap);
@@ -79,6 +82,14 @@ bool ATower::Attack()
 		}
 	}
 	return false;
+}
+
+void ATower::OnMouseButtonDown(UPrimitiveComponent* PrimitiveComponent, FKey InKey)
+{
+	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+	{
+		GameInstance->GetMapManager()->GetMainHUD()->TowerSelected(this);
+	}
 }
 
 void ATower::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

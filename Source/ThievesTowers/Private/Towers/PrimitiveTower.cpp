@@ -31,11 +31,7 @@ void APrimitiveTower::BeginPlay()
 	Super::BeginPlay();
 
 	CapsuleComponent->SetCapsuleRadius(Range);
-	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
-	{
-		GameInstance->AddTower(this);
-		GameInstance->GetMapManager()->GetMainHUD()->TowerSelected(this);
-	}
+	if (UGA_ThievesTowers *GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance())) { GameInstance->AddTower(this); }
 	Activate();
 }
 

@@ -16,6 +16,9 @@ class THIEVESTOWERS_API ACapacitour : public APrimitiveTower
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tower - Attributes")
 	TArray<TEnumAsByte<ETypeOfDamage>> TypesOfDamage = { Physical, Magical, Explosive };
+
+	UFUNCTION()
+	virtual void OnMouseButtonDown(UPrimitiveComponent* PrimitiveComponent, FKey InKey);
 	
 	UFUNCTION()
 	virtual void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

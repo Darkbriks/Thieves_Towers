@@ -1,7 +1,12 @@
 #include "Towers/TowerWidget.h"
+
+#include "MainHUD.h"
+
 #include "Towers/Tower.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+
+#include "Manager/GA_ThievesTowers.h"
 
 void UTowerWidget::NativeConstruct()
 {
@@ -9,6 +14,7 @@ void UTowerWidget::NativeConstruct()
 	
 	PreviousTargetingModeButton->OnClicked.AddDynamic(this, &UTowerWidget::OnPreviousTargetingModeButtonClicked);
 	NextTargetingModeButton->OnClicked.AddDynamic(this, &UTowerWidget::OnNextTargetingModeButtonClicked);
+	CloseButton->OnClicked.AddDynamic(this, &UTowerWidget::OnCloseButtonClicked);
 }
 
 void UTowerWidget::SetTower(APrimitiveTower* InTower)
@@ -61,5 +67,16 @@ void UTowerWidget::OnNextTargetingModeButtonClicked()
 		CurrentTargetingModeIndex = (CurrentTargetingModeIndex + 1) % TargetingModes.Num();
 		Tower->SetTargetingMode(TargetingModes[CurrentTargetingModeIndex]);
 		CurrentTargetingModeName->SetText(FText::FromString(TargetingModes[CurrentTargetingModeIndex]->GetName()));
+	}
+}
+
+void UTowerWidget::OnCloseButtonClicked()
+{
+	if (PrimitiveTower)
+	{
+		if (UGA_ThievesTowers* GameInstance = Cast<UGA_ThievesTowers>(GetGameInstance()))
+		{
+			GameInstance->GetMapManager()->GetMainHUD()->TowerDeselected(PrimitiveTower);
+		}
 	}
 }

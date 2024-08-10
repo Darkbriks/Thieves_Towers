@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* NextTargetingModeButton;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* CloseButton;
+
 	UPROPERTY()
 	APrimitiveTower* PrimitiveTower;
 
@@ -44,6 +47,9 @@ protected:
 
 	UFUNCTION()
 	void OnNextTargetingModeButtonClicked();
+
+	UFUNCTION()
+	void OnCloseButtonClicked();
 
 public:
 	APrimitiveTower* GetTower() const { return PrimitiveTower; }
