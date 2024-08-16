@@ -16,10 +16,9 @@ void UMainHUD::NativeConstruct()
 		MapManager = GameInstance->GetMapManager();
 		MapManager->SetMainHUD(this);
 
-		CardHand->OnDeckValidated.AddDynamic(this, &UMainHUD::OnDeckValidated);
-
-		WaveButton->OnClicked.AddDynamic(this, &UMainHUD::OnWaveButtonClicked);
-		PlayButton->OnClicked.AddDynamic(this, &UMainHUD::OnPlayButtonClicked);
+		if (CardHand) { CardHand->OnDeckValidated.AddDynamic(this, &UMainHUD::OnDeckValidated); }
+		if (WaveButton) { WaveButton->OnClicked.AddDynamic(this, &UMainHUD::OnWaveButtonClicked); }
+		if (PlayButton) { PlayButton->OnClicked.AddDynamic(this, &UMainHUD::OnPlayButtonClicked); }
 
 		HeroNameField->SetText(FText::FromName(MapManager->GetHeroName()));
 	}
